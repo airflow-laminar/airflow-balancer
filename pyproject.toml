@@ -28,6 +28,7 @@ dependencies = [
     "apache-airflow>=2.8",
     "apache-airflow-providers-ssh",
     "airflow-config",
+    "pydantic",
 ]
 
 [project.optional-dependencies]
