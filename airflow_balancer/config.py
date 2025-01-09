@@ -33,6 +33,8 @@ class Host(BaseModel):
     size: Optional[int] = None
     queues: List[str] = Field(default_factory=list)
 
+    tags: List[str] = Field(default_factory=list)
+
     @property
     def hook(self, use_local: bool = True) -> SSHHook:
         if use_local and not self.name.count(".") > 0:
@@ -116,12 +118,13 @@ class BalancerConfiguration(BaseModel):
             if not host.size:
                 host.size = self.default_size
 
-    def filter_hosts(self, name: str = "", queue: str = "", os: str = "", custom: Callable = None) -> List[Host]:
+    def filter_hosts(self, name: str = "", queue: str = "", os: str = "", tag: str = "", custom: Callable = None) -> List[Host]:
         return [
             host
             for host in self.all_hosts
             if (not name or fnmatch(host.name, name))
             and (not queue or queue in host.queues)
+            and (not tag or tag in host.tags)
             and (not os or host.os == os)
             and (not custom or custom(host))
         ]
