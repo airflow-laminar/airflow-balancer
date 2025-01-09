@@ -24,7 +24,11 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
-dependencies = []
+dependencies = [
+    "apache-airflow>=2.8",
+    "apache-airflow-providers-ssh",
+    "airflow-config",
+]
 
 [project.optional-dependencies]
 develop = [
