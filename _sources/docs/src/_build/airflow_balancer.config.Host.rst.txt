@@ -1,0 +1,6 @@
+﻿airflow\_balancer.config.Host
+=============================
+
+.. currentmodule:: airflow_balancer.config
+
+.. autopydantic_model:: Host

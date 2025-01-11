@@ -1,0 +1,6 @@
+﻿airflow\_balancer.BalancerConfiguration
+=======================================
+
+.. currentmodule:: airflow_balancer
+
+.. autopydantic_model:: BalancerConfiguration
