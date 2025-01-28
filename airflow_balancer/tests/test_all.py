@@ -27,55 +27,55 @@ class TestConfig:
             assert len(config.extensions["balancer"].hosts) == 3
             assert [x.name for x in config.extensions["balancer"].hosts] == ["host1", "host2", "host3"]
             for host in config.extensions["balancer"].hosts:
-                assert host.hook
+                assert host.hook()
 
     def test_load_hook(self):
         h = Host(name="test", username="test")
 
-        assert h.hook
-        assert h.hook.username == "test"
-        assert h.hook.remote_host == "test.local"
-        assert h.hook.password is None
-        assert h.hook.key_file is None
+        assert h.hook()
+        assert h.hook().username == "test"
+        assert h.hook().remote_host == "test.local"
+        assert h.hook().password is None
+        assert h.hook().key_file is None
 
         h = Host(name="test", username="test", password="test")
-        assert h.hook
-        assert h.hook.username == "test"
-        assert h.hook.remote_host == "test.local"
-        assert h.hook.password == "test"
-        assert h.hook.key_file is None
+        assert h.hook()
+        assert h.hook().username == "test"
+        assert h.hook().remote_host == "test.local"
+        assert h.hook().password == "test"
+        assert h.hook().key_file is None
 
         h = Host(name="test", username="test", password_variable="test")
         with patch("airflow.models.variable.Variable.get") as get_mock:
             get_mock.return_value = "test"
-            assert h.hook
-            assert h.hook.username == "test"
-            assert h.hook.remote_host == "test.local"
-            assert h.hook.password == "test"
-            assert h.hook.key_file is None
+            assert h.hook()
+            assert h.hook().username == "test"
+            assert h.hook().remote_host == "test.local"
+            assert h.hook().password == "test"
+            assert h.hook().key_file is None
 
         h = Host(name="test", username="test", password_variable="test", password_variable_key="test")
         with patch("airflow.models.variable.Variable.get") as get_mock:
             get_mock.return_value = {"test": "blerg"}
-            assert h.hook
-            assert h.hook.username == "test"
-            assert h.hook.remote_host == "test.local"
-            assert h.hook.password == "blerg"
-            assert h.hook.key_file is None
+            assert h.hook()
+            assert h.hook().username == "test"
+            assert h.hook().remote_host == "test.local"
+            assert h.hook().password == "blerg"
+            assert h.hook().key_file is None
 
         h = Host(name="test", username="test", key_file="test")
-        assert h.hook
-        assert h.hook.username == "test"
-        assert h.hook.remote_host == "test.local"
-        assert h.hook.password is None
-        assert h.hook.key_file == "test"
+        assert h.hook()
+        assert h.hook().username == "test"
+        assert h.hook().remote_host == "test.local"
+        assert h.hook().password is None
+        assert h.hook().key_file == "test"
 
         h = Host(name="test")
-        assert h.hook
-        assert h.hook.username == getuser()
-        assert h.hook.remote_host == "test.local"
-        assert h.hook.password is None
-        assert h.hook.key_file is None
+        assert h.hook()
+        assert h.hook().username == getuser()
+        assert h.hook().remote_host == "test.local"
+        assert h.hook().password is None
+        assert h.hook().key_file is None
 
     def test_filter_hosts(self):
         with patch("airflow_balancer.config.Pool") as pool_mock:
