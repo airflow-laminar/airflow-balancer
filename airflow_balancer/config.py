@@ -1,7 +1,9 @@
 from fnmatch import fnmatch
-from typing import Callable, List, Optional
+from random import choice
+from typing import Callable, List, Optional, Union
 
 from airflow.models.pool import Pool, PoolNotFound  # noqa: F401
+from airflow.models.variable import Variable
 from airflow.providers.ssh.hooks.ssh import SSHHook
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Self
@@ -42,7 +44,12 @@ class Host(BaseModel):
         if self.username and self.password:
             return SSHHook(remote_host=name, username=self.username, password=self.password)
         elif self.username and self.password_variable:
-            raise NotImplementedError()
+            if self.password_variable_key:
+                credentials = Variable.get(self.password_variable, deserialize_json=True)
+                password = credentials[self.password_variable_key]
+            else:
+                password = Variable.get(self.password_variable)
+            return SSHHook(remote_host=name, username=self.username, password=password)
         elif self.username and self.key_file:
             return SSHHook(remote_host=name, username=self.username, key_file=self.key_file)
         elif self.username:
@@ -118,13 +125,47 @@ class BalancerConfiguration(BaseModel):
             if not host.size:
                 host.size = self.default_size
 
-    def filter_hosts(self, name: str = "", queue: str = "", os: str = "", tag: str = "", custom: Callable = None) -> List[Host]:
+    def filter_hosts(
+        self,
+        name: Optional[Union[str, List[str]]] = None,
+        queue: Optional[Union[str, List[str]]] = None,
+        os: Optional[Union[str, List[str]]] = None,
+        tag: Optional[Union[str, List[str]]] = None,
+        custom: Optional[Callable] = None,
+    ) -> List[Host]:
+        name = name or []
+        queue = queue or []
+        os = os or []
+        tag = tag or []
+        if isinstance(name, str):
+            name = [name]
+        if isinstance(queue, str):
+            queue = [queue]
+        if isinstance(os, str):
+            os = [os]
+        if isinstance(tag, str):
+            tag = [tag]
+
         return [
             host
             for host in self.all_hosts
-            if (not name or fnmatch(host.name, name))
-            and (not queue or queue in host.queues)
-            and (not tag or tag in host.tags)
-            and (not os or host.os == os)
+            if (not name or any(fnmatch(host.name, n) for n in name))
+            and (not queue or any(fnmatch(host_queue, queue_pat) for queue_pat in queue for host_queue in host.queues))
+            and (not tag or any(fnmatch(host_tag, tag_pat) for tag_pat in tag for host_tag in host.tags))
+            and (not os or any(fnmatch(host.os, o) for o in os))
             and (not custom or custom(host))
         ]
+
+    def select_host(
+        self,
+        name: Optional[Union[str, List[str]]] = None,
+        queue: Optional[Union[str, List[str]]] = None,
+        os: Union[str, List[str]] = "",
+        tag: Union[str, List[str]] = "",
+        custom: Callable = None,
+    ) -> List[Host]:
+        candidates = self.filter_hosts(name=name, queue=queue, os=os, tag=tag, custom=custom)
+        if not candidates:
+            raise RuntimeError(f"No host found for {name} / {queue} / {os} / {tag}")
+        # TODO more schemes, interrogate usage
+        return choice(candidates)
