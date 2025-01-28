@@ -40,6 +40,8 @@ class Host(BaseModel):
     def hook(self, use_local: bool = True) -> SSHHook:
         if use_local and not self.name.count(".") > 0:
             name = f"{self.name}.local"
+        else:
+            name = self.name
         if self.username and self.password:
             return SSHHook(remote_host=name, username=self.username, password=self.password)
         elif self.username and self.password_variable:
