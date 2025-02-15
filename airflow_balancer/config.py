@@ -37,6 +37,9 @@ class Host(BaseModel):
 
     tags: List[str] = Field(default_factory=list)
 
+    def override(self, **kwargs) -> "Host":
+        return Host(**{**self.model_dump(), **kwargs})
+
     def hook(self, username: str = None, use_local: bool = True) -> SSHHook:
         if use_local and not self.name.count(".") > 0:
             name = f"{self.name}.local"
