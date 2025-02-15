@@ -37,24 +37,25 @@ class Host(BaseModel):
 
     tags: List[str] = Field(default_factory=list)
 
-    def hook(self, use_local: bool = True) -> SSHHook:
+    def hook(self, username: str = None, use_local: bool = True) -> SSHHook:
         if use_local and not self.name.count(".") > 0:
             name = f"{self.name}.local"
         else:
             name = self.name
-        if self.username and self.password:
-            return SSHHook(remote_host=name, username=self.username, password=self.password)
-        elif self.username and self.password_variable:
+        username = username or self.username
+        if username and self.password:
+            return SSHHook(remote_host=name, username=username, password=self.password)
+        elif username and self.password_variable:
             if self.password_variable_key:
                 credentials = Variable.get(self.password_variable, deserialize_json=True)
                 password = credentials[self.password_variable_key]
             else:
                 password = Variable.get(self.password_variable)
-            return SSHHook(remote_host=name, username=self.username, password=password)
-        elif self.username and self.key_file:
-            return SSHHook(remote_host=name, username=self.username, key_file=self.key_file)
-        elif self.username:
-            return SSHHook(remote_host=name, username=self.username)
+            return SSHHook(remote_host=name, username=username, password=password)
+        elif username and self.key_file:
+            return SSHHook(remote_host=name, username=username, key_file=self.key_file)
+        elif username:
+            return SSHHook(remote_host=name, username=username)
         else:
             return SSHHook(remote_host=name)
 
@@ -88,7 +89,7 @@ class BalancerConfiguration(BaseModel):
     default_queue: str = "default"
 
     # The default pool size
-    default_size: int = Field(default=10)
+    default_size: int = Field(default=8)
 
     # rewrite pool size from config if differs from airflow variable stored value
     override_pool_size: bool = False
@@ -109,10 +110,26 @@ class BalancerConfiguration(BaseModel):
                 host.size = self.default_size
             # check airflow first
             try:
-                Pool.get_pool(host.pool)
+                res = Pool.get_pool(host.pool)
+
+                # airflow return value differs version-to-version
+                if res is None:
+                    raise PoolNotFound
+                elif res.slots != host.size:
+                    if self.override_pool_size:
+                        Pool.create_or_update_pool(
+                            name=host.pool,
+                            slots=host.size,
+                            description=f"Balancer pool for host({host.name}) pool({host.pool})",
+                            include_deferred=False,
+                        )
+                    else:
+                        host.size = res.slots
             except PoolNotFound:
                 # else set to default
-                Pool.create_or_update_pool(name=host.pool, slots=host.size, description=f"Balancer pool for host {host.name} / {host.pool}")
+                Pool.create_or_update_pool(
+                    name=host.pool, slots=host.size, description=f"Balancer pool for host({host.name}) pool({host.pool})", include_deferred=False
+                )
             if not host.username and self.default_username:
                 host.username = self.default_username
             if not host.password and self.default_password:
