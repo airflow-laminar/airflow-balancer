@@ -29,6 +29,16 @@ class TestConfig:
             for host in config.extensions["balancer"].hosts:
                 assert host.hook()
 
+    def test_host_override(self):
+        h = Host(name="test", username="test")
+
+        assert h.hook()
+        assert h.hook().username == "test"
+
+        h2 = h.override(username="test2")
+        assert h2.hook()
+        assert h2.hook().username == "test2"
+
     def test_load_hook(self):
         h = Host(name="test", username="test")
 
