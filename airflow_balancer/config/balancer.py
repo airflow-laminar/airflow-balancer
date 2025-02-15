@@ -48,6 +48,10 @@ class BalancerConfiguration(BaseModel):
     def all_hosts(self):
         return sorted(list(set(self.hosts)))
 
+    @property
+    def all_ports(self):
+        return sorted(list(set(self.ports)))
+
     @model_validator(mode="after")
     def _validate(self) -> Self:
         # Validate no duplicate hosts
@@ -112,12 +116,13 @@ class BalancerConfiguration(BaseModel):
             _used_ports.add((port.host.name, port.port))
 
             # Create pools
-            Pool.create_or_update_pool(
-                name=f"{host.name}-port-{port.port}",
-                slots=1,
-                description=f"Balancer pool for host({port.port}) port({port.port})",
-                include_deferred=True,
-            )
+            # TODO reenable
+            # Pool.create_or_update_pool(
+            #     name=port.pool,
+            #     slots=1,
+            #     description=f"Balancer pool for host({port.port}) port({port.port})",
+            #     include_deferred=True,
+            # )
 
     def filter_hosts(
         self,
@@ -163,3 +168,49 @@ class BalancerConfiguration(BaseModel):
             raise RuntimeError(f"No host found for {name} / {queue} / {os} / {tag}")
         # TODO more schemes, interrogate usage
         return choice(candidates)
+
+    def filter_ports(
+        self,
+        name: Optional[Union[str, List[str]]] = None,
+        tag: Optional[Union[str, List[str]]] = None,
+        custom: Optional[Callable] = None,
+    ) -> List[Host]:
+        name = name or []
+        tag = tag or []
+        if isinstance(name, str):
+            name = [name]
+        if isinstance(tag, str):
+            tag = [tag]
+
+        return [
+            port
+            for port in self.all_ports
+            if (not name or any(fnmatch(port.name, n) for n in name))
+            and (not tag or any(fnmatch(port_tag, tag_pat) for tag_pat in tag for port_tag in port.tags))
+            and (not custom or custom(port))
+        ]
+
+    def select_port(
+        self,
+        name: Optional[Union[str, List[str]]] = None,
+        tag: Union[str, List[str]] = "",
+        custom: Callable = None,
+    ) -> List[Host]:
+        candidates = self.filter_ports(name=name, tag=tag, custom=custom)
+        if not candidates:
+            raise RuntimeError(f"No port found for {name} / {tag}")
+        # TODO more schemes, interrogate usage
+        return choice(candidates)
+
+    def free_port(
+        self,
+        host: Host,
+        min: int = 1000,
+        max: int = 65535,
+    ) -> Port:
+        used_ports = [port.port for port in self.ports if port.host == host]
+        port = Port(host=host, port=choice(range(min, max)))
+        while port.port in used_ports:
+            port = Port(host=host, port=choice(range(min, max)))
+            # TODO add pool around port? or just allow? context manager?
+        return port
