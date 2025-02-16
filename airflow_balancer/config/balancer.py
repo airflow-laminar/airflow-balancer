@@ -3,74 +3,18 @@ from random import choice
 from typing import Callable, List, Optional, Union
 
 from airflow.models.pool import Pool, PoolNotFound  # noqa: F401
-from airflow.models.variable import Variable
-from airflow.providers.ssh.hooks.ssh import SSHHook
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Self
 
-__all__ = (
-    "Host",
-    "BalancerConfiguration",
-)
+from .host import Host
+from .port import Port
 
-
-# TODO: hostname, user, password / secret variable, init routine
-class Host(BaseModel):
-    name: str
-    username: Optional[str] = None
-
-    # Password
-    password: Optional[str] = None
-    # If password is stored in a variable
-    password_variable: Optional[str] = None
-    # if stored in structured container, access by key
-    password_variable_key: Optional[str] = None
-    # Or get key file
-    key_file: Optional[str] = None
-
-    os: Optional[str] = None
-
-    # Airflow / balance
-    pool: Optional[str] = None
-    size: Optional[int] = None
-    queues: List[str] = Field(default_factory=list)
-
-    tags: List[str] = Field(default_factory=list)
-
-    def override(self, **kwargs) -> "Host":
-        return Host(**{**self.model_dump(), **kwargs})
-
-    def hook(self, username: str = None, use_local: bool = True) -> SSHHook:
-        if use_local and not self.name.count(".") > 0:
-            name = f"{self.name}.local"
-        else:
-            name = self.name
-        username = username or self.username
-        if username and self.password:
-            return SSHHook(remote_host=name, username=username, password=self.password)
-        elif username and self.password_variable:
-            if self.password_variable_key:
-                credentials = Variable.get(self.password_variable, deserialize_json=True)
-                password = credentials[self.password_variable_key]
-            else:
-                password = Variable.get(self.password_variable)
-            return SSHHook(remote_host=name, username=username, password=password)
-        elif username and self.key_file:
-            return SSHHook(remote_host=name, username=username, key_file=self.key_file)
-        elif username:
-            return SSHHook(remote_host=name, username=username)
-        else:
-            return SSHHook(remote_host=name)
-
-    def __lt__(self, other):
-        return self.name < other.name
-
-    def __hash__(self):
-        return hash(self.name)
+__all__ = ("BalancerConfiguration",)
 
 
 class BalancerConfiguration(BaseModel):
     hosts: List[Host] = Field(default_factory=list)
+    ports: List[Port] = Field(default_factory=list)
 
     default_username: str = "airflow"
     # Password
@@ -104,8 +48,20 @@ class BalancerConfiguration(BaseModel):
     def all_hosts(self):
         return sorted(list(set(self.hosts)))
 
+    @property
+    def all_ports(self):
+        return sorted(list(set(self.ports)))
+
     @model_validator(mode="after")
-    def _sync_limits(self) -> Self:
+    def _validate(self) -> Self:
+        # Validate no duplicate hosts
+        seen_hostnames = set()
+        for host in self.hosts:
+            if host.name in seen_hostnames:
+                raise ValueError(f"Duplicate host found: {host.name}")
+            seen_hostnames.add(host.name)
+
+        # Handle limits
         for host in self.hosts:
             if not host.pool:
                 host.pool = host.name
@@ -145,6 +101,28 @@ class BalancerConfiguration(BaseModel):
                 host.key_file = self.default_key_file
             if not host.size:
                 host.size = self.default_size
+
+        # Handle ports
+        _used_ports = set()
+        for port in self.ports:
+            if port.host_name and not port.host:
+                port.host = next((host for host in self.all_hosts if host.name == port.host_name), None)
+            if not port.port:
+                raise ValueError("Port must be specified")
+            if not port.host:
+                raise ValueError("Host must be specified")
+            if (port.host.name, port.port) in _used_ports:
+                raise ValueError(f"Duplicate port usage for host: {port.host.name}:{port.port}")
+            _used_ports.add((port.host.name, port.port))
+
+            # Create pools
+            # TODO reenable
+            # Pool.create_or_update_pool(
+            #     name=port.pool,
+            #     slots=1,
+            #     description=f"Balancer pool for host({port.port}) port({port.port})",
+            #     include_deferred=True,
+            # )
 
     def filter_hosts(
         self,
@@ -190,3 +168,49 @@ class BalancerConfiguration(BaseModel):
             raise RuntimeError(f"No host found for {name} / {queue} / {os} / {tag}")
         # TODO more schemes, interrogate usage
         return choice(candidates)
+
+    def filter_ports(
+        self,
+        name: Optional[Union[str, List[str]]] = None,
+        tag: Optional[Union[str, List[str]]] = None,
+        custom: Optional[Callable] = None,
+    ) -> List[Host]:
+        name = name or []
+        tag = tag or []
+        if isinstance(name, str):
+            name = [name]
+        if isinstance(tag, str):
+            tag = [tag]
+
+        return [
+            port
+            for port in self.all_ports
+            if (not name or any(fnmatch(port.name, n) for n in name))
+            and (not tag or any(fnmatch(port_tag, tag_pat) for tag_pat in tag for port_tag in port.tags))
+            and (not custom or custom(port))
+        ]
+
+    def select_port(
+        self,
+        name: Optional[Union[str, List[str]]] = None,
+        tag: Union[str, List[str]] = "",
+        custom: Callable = None,
+    ) -> List[Host]:
+        candidates = self.filter_ports(name=name, tag=tag, custom=custom)
+        if not candidates:
+            raise RuntimeError(f"No port found for {name} / {tag}")
+        # TODO more schemes, interrogate usage
+        return choice(candidates)
+
+    def free_port(
+        self,
+        host: Host,
+        min: int = 1000,
+        max: int = 65535,
+    ) -> Port:
+        used_ports = [port.port for port in self.ports if port.host == host]
+        port = Port(host=host, port=choice(range(min, max)))
+        while port.port in used_ports:
+            port = Port(host=host, port=choice(range(min, max)))
+            # TODO add pool around port? or just allow? context manager?
+        return port

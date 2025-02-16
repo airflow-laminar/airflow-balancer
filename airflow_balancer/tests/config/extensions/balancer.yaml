@@ -19,3 +19,10 @@ hosts:
     os: macos
     size: 8
     queues: [workers]
+
+ports:
+  - host: ${...hosts[0]}
+    port: 8080
+
+  - host_name: host2
+    port: 8793
