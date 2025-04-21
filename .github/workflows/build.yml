@@ -39,6 +39,8 @@ jobs:
       with:
         version: ${{ matrix.python-version }}
 
+    - uses: actions-ext/node/setup@main
+
     - name: Install dependencies
       run: make develop
 

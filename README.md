@@ -9,6 +9,54 @@ Utilities for load balancing DAGs
 
 ## Overview
 
+`airflow-balancer` is a utility library for Apache Airflow to track host and port usage via yaml files.
+It is tightly integrated with [airflow-laminar/airflow-config](https://github.com/airflow-laminar/airflow-config).
+
+With `airflow-balancer`, you can register host and port usage in configuration:
+
+```yaml
+_target_: airflow_balancer.BalancerConfiguration
+default_username: timkpaine
+hosts:
+  - name: host1
+    size: 16
+    os: ubuntu
+    queues: [primary]
+
+  - name: host2
+    os: ubuntu
+    size: 16
+    queues: [workers]
+
+  - name: host3
+    os: macos
+    size: 8
+    queues: [workers]
+
+ports:
+  - host: host1
+    port: 8080
+
+  - host_name: host2
+    port: 8793
+```
+
+Either via `airflow-config` or directly, you can then select amongst available hosts for use in your DAGs.
+
+```python
+from airflow_balaner import BalancerConfiguration, load
+
+balancer_config: BalancerConfiguration = load("balancer.yaml")
+
+host = balancer_config.select_host(queue="workers")
+port = balancer_config.free_port(host=host)
+
+...
+
+operator = SSHOperator(ssh_hook=host.hook(), ...)
+
+```
+
 ## Installation
 
 You can install from pip:

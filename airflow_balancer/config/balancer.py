@@ -1,8 +1,11 @@
 from fnmatch import fnmatch
+from pathlib import Path
 from random import choice
 from typing import Callable, List, Optional, Union
 
 from airflow.models.pool import Pool, PoolNotFound  # noqa: F401
+from hydra import compose, initialize_config_dir
+from hydra.utils import instantiate
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Self
 
@@ -200,6 +203,7 @@ class BalancerConfiguration(BaseModel):
         if not candidates:
             raise RuntimeError(f"No port found for {name} / {tag}")
         # TODO more schemes, interrogate usage
+        # TODO select by host
         return choice(candidates)
 
     def free_port(
@@ -214,3 +218,30 @@ class BalancerConfiguration(BaseModel):
             port = Port(host=host, port=choice(range(min, max)))
             # TODO add pool around port? or just allow? context manager?
         return port
+
+    @staticmethod
+    def load(yaml_file: str | Path) -> Self:
+        """Load configuration from yaml file"""
+        if not isinstance(yaml_file, Path):
+            yaml_file = Path(yaml_file).resolve()
+        if not yaml_file.suffix == ".yaml":
+            raise ValueError(f"File {yaml_file} must end in .yaml")
+
+        file_name = yaml_file.stem
+        config_dir = str(yaml_file.parent)
+
+        # TODO: how to get the underlying value directly
+        with initialize_config_dir(config_dir=config_dir, version_base=None):
+            cfg = compose(config_name=file_name, overrides=[])
+            config = instantiate(cfg)[yaml_file.parent.stem]
+            if not isinstance(config, BalancerConfiguration):
+                for value in config.values():
+                    if isinstance(value, BalancerConfiguration):
+                        config = value
+                        break
+                else:
+                    raise ValueError(f"Config {file_name} does not contain a BalancerConfiguration")
+            return config
+
+
+load = BalancerConfiguration.load

@@ -1,5 +1,8 @@
 [build-system]
-requires = ["hatchling"]
+requires = [
+    "hatchling",
+    "hatch-jupyter-builder",
+]
 build-backend="hatchling.build"
 
 [project]
@@ -28,8 +31,10 @@ classifiers = [
 dependencies = [
     "apache-airflow>=2.8",
     "apache-airflow-providers-ssh",
-    "airflow-config",
-    "pydantic",
+    "airflow-config>=1.5,<1.7",
+    "hydra-core",
+    "omegaconf",
+    "pydantic>=2",
 ]
 
 [project.optional-dependencies]
@@ -38,6 +43,7 @@ develop = [
     "bump-my-version",
     "check-manifest",
     "hatchling",
+    "hatch-jupyter-builder",
     "pytest",
     "pytest-cov",
     "ruff",
@@ -45,6 +51,9 @@ develop = [
     "uv",
     "wheel",
 ]
+
+[project.entry-points."airflow.plugins"]
+airflow-balancer-viewer = "airflow_balancer.ui:AirflowBalancerViewerPlugin"
 
 [project.scripts]
 
@@ -67,11 +76,19 @@ filename = "pyproject.toml"
 search = 'version = "{current_version}"'
 replace = 'version = "{new_version}"'
 
+[[tool.bumpversion.files]]
+filename = "js/package.json"
+search = '"version": "{current_version}"'
+replace = '"version": "{new_version}"'
+
 [tool.check-manifest]
 ignore = [
     ".copier-answers.yml",
+    "js/pnpm-lock.yaml",
     "Makefile",
+    "airflow_balancer/ui/static/**/*",
     "docs/**/*",
+    "js/dist/**/*",
 ]
 
 [tool.coverage.run]
@@ -89,18 +106,42 @@ ignore_errors = true
 fail_under = 50
 
 [tool.hatch.build]
-artifacts = []
+artifacts = [
+    "airflow_balancer/ui/static",
+]
 
 [tool.hatch.build.sources]
 src = "/"
 
 [tool.hatch.build.targets.sdist]
-packages = ["airflow_balancer"]
+packages = ["airflow_balancer", "js"]
+exclude = [
+    "/js/dist",
+    "/js/node_modules",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["airflow_balancer"]
+exclude = ["js"]
 
 [tool.hatch.build.targets.wheel.shared-data]
+
+[tool.hatch.build.hooks.jupyter-builder]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = [
+    "airflow_balancer/ui/static/cdn/index.js",
+]
+skip-if-exists = [
+    "airflow_balancer/ui/static/cdn/index.js",
+]
+dependencies = [
+    "hatch-jupyter-builder",
+]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+path = "js"
+build_cmd = "build"
+npm = "pnpm"
 
 [tool.pytest.ini_options]
 addopts = ["-vvv", "--junitxml=junit.xml"]

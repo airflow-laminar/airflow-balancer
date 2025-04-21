@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch
 
 from airflow.models.pool import PoolNotFound
@@ -18,12 +19,32 @@ class TestConfig:
             config = BalancerConfiguration()
             assert config
 
+    def test_load_config_direct(self):
+        with patch("airflow_balancer.config.balancer.Pool"):
+            fp = str(Path(__file__).parent.resolve() / "config" / "extensions" / "default.yaml")
+            config = BalancerConfiguration.load(fp)
+            print(config)
+            assert config
+            assert isinstance(config, BalancerConfiguration)
+            assert len(config.hosts) == 3
+
+    def test_load_config_serialize(self):
+        # Test serialization needed by the viewer
+        with patch("airflow_balancer.config.balancer.Pool"):
+            fp = str(Path(__file__).parent.resolve() / "config" / "extensions" / "balancer.yaml")
+            config = BalancerConfiguration.load(fp)
+            assert config
+            assert isinstance(config, BalancerConfiguration)
+            assert len(config.hosts) == 3
+            config.model_dump_json(serialize_as_any=True)
+
     def test_load_config_hydra(self):
         with patch("airflow_balancer.config.balancer.Pool"):
-            config = load_config(config_name="config")
+            config = load_config("config", "config")
             assert config
             assert "balancer" in config.extensions
             assert len(config.extensions["balancer"].hosts) == 3
             assert [x.name for x in config.extensions["balancer"].hosts] == ["host1", "host2", "host3"]
+            assert config.extensions["balancer"].default_username == "test"
             for host in config.extensions["balancer"].hosts:
                 assert host.hook()

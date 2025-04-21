@@ -1,28 +1,5 @@
 # @package extensions.balancer
+defaults:
+  - default@_here_
 
-defaults: []
-
-_target_: airflow_balancer.BalancerConfiguration
-default_username: timkpaine
-hosts:
-  - name: host1
-    size: 16
-    os: ubuntu
-    queues: [primary]
-
-  - name: host2
-    os: ubuntu
-    size: 16
-    queues: [workers]
-
-  - name: host3
-    os: macos
-    size: 8
-    queues: [workers]
-
-ports:
-  - host: ${...hosts[0]}
-    port: 8080
-
-  - host_name: host2
-    port: 8793
+default_username: test

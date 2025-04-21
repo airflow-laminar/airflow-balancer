@@ -126,14 +126,18 @@ dmypy.json
 
 # Documentation
 docs/_build/
-docs/src/_build/
 /site
 docs/api
-docs/index.md
-_template/labextension
 docs/html
+docs/src/_build
 index.md
+index.md
+_template/labextension
 
+# JS
+js/node_modules
+js/dist
+airflow_balancer/ui/static
 
 # Jupyter
 .ipynb_checkpoints
@@ -144,6 +148,3 @@ index.md
 
 # Rust
 target
-
-
-docs/html

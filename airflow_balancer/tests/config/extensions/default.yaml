@@ -1,0 +1,33 @@
+# @package extensions.balancer
+_target_: airflow_balancer.BalancerConfiguration
+
+default_username: timkpaine
+default_key_file: /home/airflow/.ssh/id_rsa
+primary_queue: primary
+secondary_queue: workers
+hosts:
+  - name: host1
+    size: 16
+    os: ubuntu
+    queues: [primary]
+    tags: []
+
+  - name: host2
+    os: ubuntu
+    size: 16
+    queues: [workers]
+    tags: []
+
+  - name: host3
+    os: macos
+    size: 8
+    queues: [workers]
+    tags: []
+
+ports:
+  - name: named-port
+    host: ${...hosts[0]}
+    port: 8080
+
+  - host_name: host2
+    port: 8793
