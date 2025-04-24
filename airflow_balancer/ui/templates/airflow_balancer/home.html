@@ -1,0 +1,17 @@
+{% extends "appbuilder/base.html" %}
+{% block content %}
+    <h2>Found:</h2>
+    <ul>
+        {% for item in yamls %}
+            <li><a onclick="document.getElementById('yaml').value = this.innerHTML">{{ item }}</a></li>
+        {% endfor %}
+    </ul>
+    <h2>Manual:</h2>
+    <form action="hosts" method="GET">
+        <input type="text" id="yaml" name="yaml" value="" placeholder="Enter path to yaml" required style="width: 400px;">
+        <br>
+        <br>
+        <button type="submit" style="width: 400px">Submit</button>
+    </form>
+
+{% endblock %}
