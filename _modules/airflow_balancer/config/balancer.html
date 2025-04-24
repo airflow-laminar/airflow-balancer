@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>airflow_balancer.config.balancer - airflow-balancer v0.3.1</title>
+        <title>airflow_balancer.config.balancer - airflow-balancer v0.4.0</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -171,7 +171,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">airflow-balancer <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.3.1</code></div></a>
+      <a href="../../../index.html"><div class="brand">airflow-balancer <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.4.0</code></div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -195,7 +195,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">airflow-balancer <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.3.1</code></span>
+  <span class="sidebar-brand-text">airflow-balancer <code style='font-size: var(--font-size--small--4);color: var(--sd-color-primary);'>v0.4.0</code></span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -245,10 +245,13 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for airflow_balancer.config.balancer</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fnmatch</span><span class="w"> </span><span class="kn">import</span> <span class="n">fnmatch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">airflow.models.pool</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">PoolNotFound</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydra</span><span class="w"> </span><span class="kn">import</span> <span class="n">compose</span><span class="p">,</span> <span class="n">initialize_config_dir</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydra.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">instantiate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
@@ -459,6 +462,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No port found for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># TODO more schemes, interrogate usage</span>
+        <span class="c1"># TODO select by host</span>
         <span class="k">return</span> <span class="n">choice</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span></div>
 
 
@@ -476,8 +480,38 @@
             <span class="n">port</span> <span class="o">=</span> <span class="n">Port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">)))</span>
             <span class="c1"># TODO add pool around port? or just allow? context manager?</span>
         <span class="k">return</span> <span class="n">port</span></div>
+
+
+<div class="viewcode-block" id="BalancerConfiguration.load">
+<a class="viewcode-back" href="../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.load">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load configuration from yaml file&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="n">yaml_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">yaml_file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">yaml_file</span><span class="si">}</span><span class="s2"> must end in .yaml&quot;</span><span class="p">)</span>
+
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">yaml_file</span><span class="o">.</span><span class="n">stem</span>
+        <span class="n">config_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">yaml_file</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="c1"># TODO: how to get the underlying value directly</span>
+        <span class="k">with</span> <span class="n">initialize_config_dir</span><span class="p">(</span><span class="n">config_dir</span><span class="o">=</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">compose</span><span class="p">(</span><span class="n">config_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="p">[])</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">instantiate</span><span class="p">(</span><span class="n">cfg</span><span class="p">)[</span><span class="n">yaml_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">stem</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">BalancerConfiguration</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">BalancerConfiguration</span><span class="p">):</span>
+                        <span class="n">config</span> <span class="o">=</span> <span class="n">value</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2"> does not contain a BalancerConfiguration&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">config</span></div>
 </div>
 
+
+
+<span class="n">load</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load</span>
 </pre></div>
         </article>
       </div>
@@ -510,7 +544,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
