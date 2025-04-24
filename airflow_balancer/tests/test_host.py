@@ -1,9 +1,9 @@
 from getpass import getuser
-from unittest.mock import patch
 
 from airflow.models.pool import PoolNotFound
 
 from airflow_balancer import BalancerConfiguration, Host
+from airflow_balancer.testing import pools, variables
 
 
 class TestConfig:
@@ -34,8 +34,7 @@ class TestConfig:
         assert h.hook().key_file is None
 
         h = Host(name="test", username="test", password_variable="test")
-        with patch("airflow.models.variable.Variable.get") as get_mock:
-            get_mock.return_value = "test"
+        with variables("test"):
             assert h.hook()
             assert h.hook().username == "test"
             assert h.hook().remote_host == "test.local"
@@ -43,8 +42,7 @@ class TestConfig:
             assert h.hook().key_file is None
 
         h = Host(name="test", username="test", password_variable="test", password_variable_key="test")
-        with patch("airflow.models.variable.Variable.get") as get_mock:
-            get_mock.return_value = {"test": "blerg"}
+        with variables({"test": "blerg"}):
             assert h.hook()
             assert h.hook().username == "test"
             assert h.hook().remote_host == "test.local"
@@ -66,8 +64,7 @@ class TestConfig:
         assert h.hook().key_file is None
 
     def test_filter_hosts(self):
-        with patch("airflow_balancer.config.balancer.Pool") as pool_mock:
-            pool_mock.get_pool.side_effect = PoolNotFound()
+        with pools(side_effect=PoolNotFound()):
             b = BalancerConfiguration(
                 hosts=[
                     Host(name="host1", os="ab", queues=["ab"], tags=["tag1", "tag2"]),

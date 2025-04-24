@@ -1,26 +1,24 @@
 from pathlib import Path
-from unittest.mock import patch
 
 from airflow.models.pool import PoolNotFound
 from airflow_config import load_config
 
 from airflow_balancer import BalancerConfiguration
+from airflow_balancer.testing import pools
 
 
 class TestConfig:
     def test_load_config(self):
-        with patch("airflow_balancer.config.balancer.Pool") as pool_mock:
-            pool_mock.get_pool.return_value = "Test"
+        with pools(return_value="Test"):
             config = BalancerConfiguration()
             assert config
 
-        with patch("airflow_balancer.config.balancer.Pool") as pool_mock:
-            pool_mock.get_pool.side_effect = PoolNotFound()
+        with pools(side_effect=PoolNotFound()):
             config = BalancerConfiguration()
             assert config
 
     def test_load_config_direct(self):
-        with patch("airflow_balancer.config.balancer.Pool"):
+        with pools():
             fp = str(Path(__file__).parent.resolve() / "config" / "extensions" / "default.yaml")
             config = BalancerConfiguration.load(fp)
             print(config)
@@ -30,7 +28,7 @@ class TestConfig:
 
     def test_load_config_serialize(self):
         # Test serialization needed by the viewer
-        with patch("airflow_balancer.config.balancer.Pool"):
+        with pools():
             fp = str(Path(__file__).parent.resolve() / "config" / "extensions" / "balancer.yaml")
             config = BalancerConfiguration.load(fp)
             assert config
@@ -39,7 +37,7 @@ class TestConfig:
             config.model_dump_json(serialize_as_any=True)
 
     def test_load_config_hydra(self):
-        with patch("airflow_balancer.config.balancer.Pool"):
+        with pools():
             config = load_config("config", "config")
             assert config
             assert "balancer" in config.extensions
