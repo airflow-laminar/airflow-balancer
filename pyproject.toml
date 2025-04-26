@@ -56,6 +56,7 @@ develop = [
 airflow-balancer-viewer = "airflow_balancer.ui:AirflowBalancerViewerPlugin"
 
 [project.scripts]
+airflow-balancer-viewer = "airflow_balancer.ui.standalone:main"
 
 [project.urls]
 Repository = "https://github.com/airflow-laminar/airflow-balancer"
