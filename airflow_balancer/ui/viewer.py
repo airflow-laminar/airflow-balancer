@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 
 from airflow.configuration import conf
 from airflow.plugins_manager import AirflowPlugin
@@ -10,7 +9,7 @@ from airflow.www.auth import has_access
 from flask import Blueprint, request
 from flask_appbuilder import BaseView, expose
 
-from airflow_balancer import BalancerConfiguration
+from .functions import get_hosts_from_yaml, get_yaml_files
 
 __all__ = (
     "AirflowBalancerViewerPluginView",
@@ -31,20 +30,10 @@ class AirflowBalancerViewerPluginView(BaseView):
         if not yaml:
             return self.render_template("airflow_config/500.html", yaml="- yaml file not specified")
         try:
-            # Process the yaml
-            yaml_file = Path(yaml).resolve()
-            inst = BalancerConfiguration.load(yaml_file)
-            for host in inst.hosts:
-                if host.password:
-                    host.password = "***"
-            if inst.default_password:
-                inst.default_password = "***"
-            for port in inst.ports:
-                if port.host.password:
-                    port.host.password = "***"
+            config = get_hosts_from_yaml(yaml)
         except FileNotFoundError:
             return self.render_template("airflow_balancer/500.html", yaml=yaml)
-        return self.render_template("airflow_balancer/hosts.html", config=str(inst.model_dump_json(serialize_as_any=True)))
+        return self.render_template("airflow_balancer/hosts.html", config=config)
 
     @expose("/")
     @has_access([(permissions.ACTION_CAN_READ, permissions.RESOURCE_WEBSITE)])
@@ -54,14 +43,7 @@ class AirflowBalancerViewerPluginView(BaseView):
         dags_folder = os.environ.get("AIRFLOW__CORE__DAGS_FOLDER", conf.getsection("core").get("dags_folder"))
         if not dags_folder:
             return self.render_template("airflow_balancer/404.html")
-
-        # Look for yamls inside the dags folder
-        yamls = []
-        base_path = Path(dags_folder)
-        for path in base_path.glob("**/*.yaml"):
-            if path.is_file():
-                if "_target_: airflow_balancer.BalancerConfiguration" in path.read_text():
-                    yamls.append(path)
+        yamls = get_yaml_files(dags_folder)
         return self.render_template("airflow_balancer/home.html", yamls=yamls)
 
 
