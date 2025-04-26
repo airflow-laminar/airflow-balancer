@@ -70,6 +70,17 @@ operator = SSHOperator(ssh_hook=host.hook(), ...)
 
 ```
 
+### Visualization
+
+Configuration, and Host and Port listing is built into the extension, available either from the topbar in Airflow or as a standalone viewer (via the `airflow-balancer-viewer` CLI).
+
+<img src="https://raw.githubusercontent.com/airflow-laminar/airflow-balancer/refs/heads/main/docs/img/toolbar.png" width=400>
+
+<img src="https://raw.githubusercontent.com/airflow-laminar/airflow-balancer/refs/heads/main/docs/img/home.png" width=400>
+
+<img src="https://raw.githubusercontent.com/airflow-laminar/airflow-balancer/refs/heads/main/docs/img/hosts.png" width=400>
+
+
 ## Installation
 
 You can install from pip:
