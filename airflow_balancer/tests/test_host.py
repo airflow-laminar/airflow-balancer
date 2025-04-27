@@ -42,7 +42,7 @@ class TestConfig:
             assert h.hook().key_file is None
 
         h = Host(name="test", username="test", password_variable="test", password_variable_key="test")
-        with variables({"test": "blerg"}):
+        with variables({"test": "blerg"}, side_effect=lambda *args, **kwargs: {"test": "blerg"}):
             assert h.hook()
             assert h.hook().username == "test"
             assert h.hook().remote_host == "test.local"
