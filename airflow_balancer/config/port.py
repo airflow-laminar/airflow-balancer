@@ -15,15 +15,26 @@ class Port(BaseModel):
     port: int = Field(default=None, ge=1, le=65535, description="Port number")
     tags: List[str] = Field(default_factory=list)
 
+    @property
+    def _calc_name(self):
+        if not self.name:
+            if self.host:
+                return f"{self.host.name}-{self.port}"
+            return f"{self.host_name}-{self.port}"
+        return self.name
+
     def __lt__(self, other):
-        return (self.name or "") < (other.name or "") and self.host < other.host and self.port < other.port
+        return self._calc_name < other._calc_name
+
+    def __eq__(self, other):
+        return self._calc_name == other._calc_name
 
     def __hash__(self):
-        return hash(self.name or "") ^ hash(self.host) ^ hash(self.port)
+        return hash(self._calc_name)
 
     @property
     def pool(self):
-        return f"{self.name}-{self.host.name}-port-{self.port}" if self.name else f"{self.host.name}-port-{self.port}"
+        return self._calc_name
 
     @model_validator(mode="after")
     def _validate(self) -> Self:

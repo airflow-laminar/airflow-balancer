@@ -93,7 +93,6 @@ def build_app() -> FastAPI:
         if not yaml:
             return templates.TemplateResponse("airflow_balancer/500.html", {"yaml": "- yaml file not specified", **fab_common_mock})
         config = get_hosts_from_yaml(yaml)
-        print(config)
         return templates.TemplateResponse("hosts.html", {"config": config, **fab_common_mock})
 
     return app
@@ -103,4 +102,4 @@ def main():
     app = build_app()
 
     # Run the application using Uvicorn
-    run(app, host="0.0.0.0", port=8000)
+    run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))

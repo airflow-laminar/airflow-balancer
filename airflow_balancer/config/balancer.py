@@ -126,6 +126,7 @@ class BalancerConfiguration(BaseModel):
             #     description=f"Balancer pool for host({port.port}) port({port.port})",
             #     include_deferred=True,
             # )
+        return self
 
     def filter_hosts(
         self,
@@ -233,8 +234,21 @@ class BalancerConfiguration(BaseModel):
         # TODO: how to get the underlying value directly
         with initialize_config_dir(config_dir=config_dir, version_base=None):
             cfg = compose(config_name=file_name, overrides=[])
-            config = instantiate(cfg)[yaml_file.parent.stem]
+            inst_cfg = instantiate(cfg)
+
+            # Try to find the BalancerConfiguration in the config
+            # TODO: recursively search for BalancerConfiguration
+            # TODO: more than one?
+            if yaml_file.parent.stem in inst_cfg:
+                config = inst_cfg[yaml_file.parent.stem]
+            else:
+                config = inst_cfg
+
+            if "extensions" in config:
+                config = config["extensions"]
+
             if not isinstance(config, BalancerConfiguration):
+                # Try to look through values again
                 for value in config.values():
                     if isinstance(value, BalancerConfiguration):
                         config = value

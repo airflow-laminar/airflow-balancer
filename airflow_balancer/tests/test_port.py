@@ -1,20 +1,34 @@
-from unittest.mock import patch
-
 import pytest
 from airflow.models.pool import PoolNotFound
+from pydantic import ValidationError
 
 from airflow_balancer import BalancerConfiguration, Host, Port
+from airflow_balancer.testing import pools
 
 
 class TestConfig:
     def test_no_duplicate_ports(self):
-        with patch("airflow_balancer.config.balancer.Pool") as pool_mock:
-            pool_mock.get_pool.side_effect = PoolNotFound()
+        with pools(side_effect=PoolNotFound()):
             h1 = Host(name="host1")
             h2 = Host(name="host2")
             p1 = Port(host=h1, port=1002)
-            p2 = Port(host=h2, port=1000)
+            p2 = Port(name="p2", host=h2, port=1000)
+            p3 = Port(name="p3", host=h2, port=999)
+
+            with pytest.raises(ValidationError):
+                Port()
+            with pytest.raises(ValidationError):
+                Port(host=Host(name="h1"), host_name="h2")
+
             p1dupe = Port(host_name="host1", port=1002)
+
+            assert p2 < p3
+            assert p2 == p2
+            assert p1 == p1dupe
+            assert hash(p1) != hash(p2)
+            assert p1.pool == "host1-1002"
+            assert p2.pool == "p2"
+            assert p1dupe.pool == "host1-1002"
 
             BalancerConfiguration(
                 hosts=[h1, h2],

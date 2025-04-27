@@ -50,7 +50,13 @@ develop = [
     "twine",
     "uv",
     "wheel",
+    # Standalone UI
+    "flask_appbuilder",
+    "flask",
+    "fastapi",
+    "uvicorn",
 ]
+
 
 [project.entry-points."airflow.plugins"]
 airflow-balancer-viewer = "airflow_balancer.ui:AirflowBalancerViewerPlugin"
@@ -146,7 +152,6 @@ npm = "pnpm"
 
 [tool.pytest.ini_options]
 addopts = ["-vvv", "--junitxml=junit.xml"]
-asyncio_mode = "strict"
 testpaths = "airflow_balancer/tests"
 
 [tool.ruff]
