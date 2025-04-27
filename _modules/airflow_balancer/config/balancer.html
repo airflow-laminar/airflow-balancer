@@ -374,6 +374,7 @@
             <span class="c1">#     description=f&quot;Balancer pool for host({port.port}) port({port.port})&quot;,</span>
             <span class="c1">#     include_deferred=True,</span>
             <span class="c1"># )</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="BalancerConfiguration.filter_hosts">
 <a class="viewcode-back" href="../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.filter_hosts">[docs]</a>
@@ -498,8 +499,21 @@
         <span class="c1"># TODO: how to get the underlying value directly</span>
         <span class="k">with</span> <span class="n">initialize_config_dir</span><span class="p">(</span><span class="n">config_dir</span><span class="o">=</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
             <span class="n">cfg</span> <span class="o">=</span> <span class="n">compose</span><span class="p">(</span><span class="n">config_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="p">[])</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">instantiate</span><span class="p">(</span><span class="n">cfg</span><span class="p">)[</span><span class="n">yaml_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">stem</span><span class="p">]</span>
+            <span class="n">inst_cfg</span> <span class="o">=</span> <span class="n">instantiate</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+            <span class="c1"># Try to find the BalancerConfiguration in the config</span>
+            <span class="c1"># TODO: recursively search for BalancerConfiguration</span>
+            <span class="c1"># TODO: more than one?</span>
+            <span class="k">if</span> <span class="n">yaml_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">stem</span> <span class="ow">in</span> <span class="n">inst_cfg</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">inst_cfg</span><span class="p">[</span><span class="n">yaml_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">stem</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">inst_cfg</span>
+
+            <span class="k">if</span> <span class="s2">&quot;extensions&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;extensions&quot;</span><span class="p">]</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">BalancerConfiguration</span><span class="p">):</span>
+                <span class="c1"># Try to look through values again</span>
                 <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">BalancerConfiguration</span><span class="p">):</span>
                         <span class="n">config</span> <span class="o">=</span> <span class="n">value</span>
