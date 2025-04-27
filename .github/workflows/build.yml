@@ -40,6 +40,11 @@ jobs:
         version: ${{ matrix.python-version }}
 
     - uses: actions-ext/node/setup@main
+<<<<<<< before updating
+=======
+      with:
+        version: 20.x
+>>>>>>> after updating
 
     - name: Install dependencies
       run: make develop
