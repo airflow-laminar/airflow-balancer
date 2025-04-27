@@ -124,11 +124,8 @@ exclude = [
 [tool.hatch.build.targets.wheel]
 packages = ["airflow_balancer"]
 exclude = ["js"]
-<<<<<<< before updating
 
 [tool.hatch.build.targets.wheel.shared-data]
-=======
->>>>>>> after updating
 
 [tool.hatch.build.hooks.jupyter-builder]
 build-function = "hatch_jupyter_builder.npm_builder"
