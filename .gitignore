@@ -128,9 +128,15 @@ dmypy.json
 docs/_build/
 /site
 docs/api
+<<<<<<< before updating
 docs/html
 docs/src/_build
 index.md
+=======
+docs/index.md
+docs/html
+docs/jupyter_execute
+>>>>>>> after updating
 index.md
 _template/labextension
 
