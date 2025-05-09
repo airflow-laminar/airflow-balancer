@@ -43,11 +43,17 @@ def get_yaml_files(dags_folder: str) -> list[Path]:
         if path.is_file():
             if "_target_: airflow_balancer.BalancerConfiguration" in path.read_text():
                 yamls.append(path)
-    for path in base_path.glob("**/*.yaml"):
-        if path.is_file() and path not in yamls:
-            # Check and see if this references any existing yamls
-            for yaml in yamls:
-                if path.parent == yaml.parent and f"{yaml.stem}@" in path.read_text():
-                    yamls.append(path)
-                    break
+    len_yamls = len(yamls)
+    len_yamls_last = 0
+    # If we have yamls, look for any that reference them
+    while len_yamls != len_yamls_last:
+        for path in base_path.glob("**/*.yaml"):
+            if path.is_file() and path not in yamls:
+                # Check and see if this references any existing yamls
+                for yaml in yamls:
+                    if path.parent == yaml.parent and f"{yaml.stem}@" in path.read_text():
+                        yamls.append(path)
+                        break
+        len_yamls_last = len_yamls
+        len_yamls = len(yamls)
     return yamls
