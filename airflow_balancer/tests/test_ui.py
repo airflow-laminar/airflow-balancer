@@ -31,6 +31,7 @@ class TestPluginFunctions:
         assert get_yaml_files(root / "config") == [
             Path(root) / "config/extensions/default.yaml",
             Path(root) / "config/extensions/balancer.yaml",
+            Path(root) / "config/extensions/second.yaml",
         ]
 
     def test_plugin_functions_load_yamls(self):

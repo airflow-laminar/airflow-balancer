@@ -1,0 +1,5 @@
+# @package extensions.balancer
+defaults:
+  - balancer@_here_
+
+default_username: test
