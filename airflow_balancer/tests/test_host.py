@@ -17,6 +17,11 @@ class TestConfig:
         assert h2.hook()
         assert h2.hook().username == "test2"
 
+    def test_hook_kwargs(self):
+        h = Host(name="test", username="test")
+        assert h.hook().keepalive_interval == 30
+        assert h.hook(keepalive_interval=10).keepalive_interval == 10
+
     def test_load_hook(self):
         h = Host(name="test", username="test")
 
