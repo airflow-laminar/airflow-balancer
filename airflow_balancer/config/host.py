@@ -32,27 +32,27 @@ class Host(BaseModel):
     def override(self, **kwargs) -> "Host":
         return Host(**{**self.model_dump(), **kwargs})
 
-    def hook(self, username: str = None, use_local: bool = True) -> SSHHook:
+    def hook(self, username: str = None, use_local: bool = True, **hook_kwargs) -> SSHHook:
         if use_local and not self.name.count(".") > 0:
             name = f"{self.name}.local"
         else:
             name = self.name
         username = username or self.username
         if username and self.password:
-            return SSHHook(remote_host=name, username=username, password=self.password)
+            return SSHHook(remote_host=name, username=username, password=self.password, **hook_kwargs)
         elif username and self.password_variable:
             if self.password_variable_key:
                 credentials = Variable.get(self.password_variable, deserialize_json=True)
                 password = credentials[self.password_variable_key]
             else:
                 password = Variable.get(self.password_variable)
-            return SSHHook(remote_host=name, username=username, password=password)
+            return SSHHook(remote_host=name, username=username, password=password, **hook_kwargs)
         elif username and self.key_file:
-            return SSHHook(remote_host=name, username=username, key_file=self.key_file)
+            return SSHHook(remote_host=name, username=username, key_file=self.key_file, **hook_kwargs)
         elif username:
-            return SSHHook(remote_host=name, username=username)
+            return SSHHook(remote_host=name, username=username, **hook_kwargs)
         else:
-            return SSHHook(remote_host=name)
+            return SSHHook(remote_host=name, **hook_kwargs)
 
     def __lt__(self, other):
         return self.name < other.name
