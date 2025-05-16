@@ -1,3 +1,7 @@
+import "@shoelace-style/shoelace/dist/components/tab/tab.js";
+import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
+import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
+
 type Host = {
   name: string;
   username: string;
@@ -45,7 +49,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const config: Config = JSON.parse(raw_config);
 
-  root_node.innerHTML = `
+  let root_node_content = `<sl-tab-group>
+  <sl-tab slot="nav" panel="defaults">Defaults</sl-tab>
+  <sl-tab slot="nav" panel="hosts">Hosts</sl-tab>
+  <sl-tab slot="nav" panel="ports">Ports</sl-tab>
+`;
+  root_node_content += `
+  <sl-tab-panel name="defaults">
     <div class="airflow-balancer-defaults">
         <h2>Defaults</h2>
         <div class="form-group">
@@ -69,9 +79,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             <input type="number" class="form-control" id="default-size" disabled value="${config.default_size || 0}">
             <small class="form-text text-muted">Default size for all hosts.</small>
         </div>
-    </div>`;
+    </div>
+    </sl-tab-panel>`;
 
   let host_table = `
+  <sl-tab-panel name="hosts">
     <div class="airflow-balancer-hosts">
       <h2>Hosts</h2>
       <table class="table table-striped table-bordered table-hover">
@@ -123,9 +135,16 @@ document.addEventListener("DOMContentLoaded", async () => {
           </tr>
         `;
   });
-  root_node.innerHTML += host_table;
+  host_table += `
+        </tbody>
+        </table>
+    </div>
+    </sl-tab-panel>
+    `;
+  root_node_content += host_table;
 
   let port_table = `
+  <sl-tab-panel name="ports">
     <div class="airflow-balancer-ports">
       <h2>Ports</h2>
       <table class="table table-striped table-bordered table-hover">
@@ -158,6 +177,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         </tbody>
         </table>
     </div>
+    </sl-tab-panel>
     `;
-  root_node.innerHTML += port_table;
+  root_node_content += port_table;
+
+  root_node_content += `
+  </sl-tab-group>
+  `;
+  root_node.innerHTML = root_node_content;
 });
