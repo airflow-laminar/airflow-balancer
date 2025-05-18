@@ -143,7 +143,9 @@ _template/labextension
 # JS
 js/node_modules
 js/dist
+js/*.tgz
 airflow_balancer/ui/static
+
 
 # Jupyter
 .ipynb_checkpoints

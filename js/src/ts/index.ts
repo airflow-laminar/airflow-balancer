@@ -1,3 +1,7 @@
+import "@shoelace-style/shoelace/dist/components/tab/tab.js";
+import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
+import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
+
 type Host = {
   name: string;
   username: string;
@@ -29,23 +33,15 @@ type Config = {
   default_size?: number;
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const raw_config: string = window.__AIRFLOW_BALANCER_CONFIG__;
-  const root_node: HTMLDivElement = document.getElementById(
-    "airflow-balancer-root",
-  );
-  if (raw_config === undefined) {
-    root_node!.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            <strong>Airflow Balancer Config not found!</strong>
-            <p>Please make sure you are running the Airflow Balancer with the correct configuration.</p>
-        </div>
-        `;
-  }
+const makeErrorNode = () => {
+  return `<div class="alert alert-danger" role="alert">
+  <strong>Airflow Balancer Config not found!</strong>
+  <p>Please make sure you are running the Airflow Balancer with the correct configuration.</p>
+</div>`;
+};
 
-  const config: Config = JSON.parse(raw_config);
-
-  root_node.innerHTML = `
+const makeDefaultsPanel = (config: Config) => {
+  return `<sl-tab-panel name="defaults">
     <div class="airflow-balancer-defaults">
         <h2>Defaults</h2>
         <div class="form-group">
@@ -69,9 +65,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             <input type="number" class="form-control" id="default-size" disabled value="${config.default_size || 0}">
             <small class="form-text text-muted">Default size for all hosts.</small>
         </div>
-    </div>`;
+    </div>
+    </sl-tab-panel>`;
+};
 
+const makeHostsTable = (config: Config) => {
   let host_table = `
+  <sl-tab-panel name="hosts">
     <div class="airflow-balancer-hosts">
       <h2>Hosts</h2>
       <table class="table table-striped table-bordered table-hover">
@@ -123,9 +123,18 @@ document.addEventListener("DOMContentLoaded", async () => {
           </tr>
         `;
   });
-  root_node.innerHTML += host_table;
+  host_table += `
+        </tbody>
+        </table>
+    </div>
+    </sl-tab-panel>
+    `;
+  return host_table;
+};
 
+const makePortsTable = (config: Config) => {
   let port_table = `
+  <sl-tab-panel name="ports">
     <div class="airflow-balancer-ports">
       <h2>Ports</h2>
       <table class="table table-striped table-bordered table-hover">
@@ -158,6 +167,58 @@ document.addEventListener("DOMContentLoaded", async () => {
         </tbody>
         </table>
     </div>
+    </sl-tab-panel>
     `;
-  root_node.innerHTML += port_table;
+  return port_table;
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const raw_config: string = window.__AIRFLOW_BALANCER_CONFIG__;
+  const root_node: HTMLDivElement = document.getElementById(
+    "airflow-balancer-root",
+  );
+  if (raw_config === undefined) {
+    root_node!.innerHTML = makeErrorNode();
+    return;
+  }
+
+  const config: Config = JSON.parse(raw_config);
+
+  let root_node_content = `
+<sl-tab-group id="tabGroup">
+  <sl-tab slot="nav" panel="defaults">Defaults</sl-tab>
+  <sl-tab slot="nav" panel="hosts">Hosts</sl-tab>
+  <sl-tab slot="nav" panel="ports">Ports</sl-tab>
+  ${makeDefaultsPanel(config)}
+  ${makeHostsTable(config)}
+  ${makePortsTable(config)}
+</sl-tab-group>
+  `;
+  root_node.innerHTML = root_node_content;
+
+  let url = window.location.href;
+
+  const tabGroup = document.querySelector("#tabGroup");
+  tabGroup.addEventListener("sl-tab-show", (event) => {
+    const activeTabName = event.detail.name;
+
+    // Update the window URL
+    history.pushState({}, "", `#${activeTabName}`);
+  });
+
+  // Optionally, you can also handle the back/forward navigation
+  const changeTabFromHash = () => {
+    const hash = window.location.hash.slice(1);
+    const tab = tabGroup.querySelector(`sl-tab[panel="${hash}"]`);
+    if (tab) {
+      tabGroup.show(tab.panel);
+    }
+  };
+  window.addEventListener("popstate", changeTabFromHash);
+
+  if (url.indexOf("#") > 0) {
+    tabGroup.updateComplete.then(() => {
+      changeTabFromHash();
+    });
+  }
 });
