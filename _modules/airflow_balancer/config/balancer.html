@@ -245,6 +245,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for airflow_balancer.config.balancer</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fnmatch</span><span class="w"> </span><span class="kn">import</span> <span class="n">fnmatch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
@@ -259,6 +260,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.port</span><span class="w"> </span><span class="kn">import</span> <span class="n">Port</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;BalancerConfiguration&quot;</span><span class="p">,)</span>
+
+<span class="n">_log</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="BalancerConfiguration">
@@ -374,6 +377,10 @@
             <span class="c1">#     description=f&quot;Balancer pool for host({port.port}) port({port.port})&quot;,</span>
             <span class="c1">#     include_deferred=True,</span>
             <span class="c1"># )</span>
+
+        <span class="c1"># sort hosts by name, sort ports by host name then port number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hosts</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hosts</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">host</span><span class="p">:</span> <span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">port</span><span class="p">:</span> <span class="p">(</span><span class="n">port</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">port</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="BalancerConfiguration.filter_hosts">
@@ -424,7 +431,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No host found for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">queue</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">os</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># TODO more schemes, interrogate usage</span>
-        <span class="k">return</span> <span class="n">choice</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span></div>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected host: </span><span class="si">{</span><span class="n">ret</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">ret</span><span class="o">.</span><span class="n">os</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
 
 
 <div class="viewcode-block" id="BalancerConfiguration.filter_ports">
@@ -464,7 +473,9 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No port found for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># TODO more schemes, interrogate usage</span>
         <span class="c1"># TODO select by host</span>
-        <span class="k">return</span> <span class="n">choice</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span></div>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected port: </span><span class="si">{</span><span class="n">ret</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">ret</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
 
 
 <div class="viewcode-block" id="BalancerConfiguration.free_port">
