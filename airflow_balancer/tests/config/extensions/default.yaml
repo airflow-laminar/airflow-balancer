@@ -24,6 +24,13 @@ hosts:
     queues: [workers]
     tags: []
 
+  # out of order for UI sort testing
+  - name: host0
+    os: ubuntu
+    size: 8
+    queues: [workers]
+    tags: []
+
 ports:
   - name: named-port
     host: ${...hosts[0]}
@@ -31,3 +38,6 @@ ports:
 
   - host_name: host2
     port: 8793
+
+  - host_name: host1
+    port: 8000

@@ -24,7 +24,7 @@ class TestConfig:
             print(config)
             assert config
             assert isinstance(config, BalancerConfiguration)
-            assert len(config.hosts) == 3
+            assert len(config.hosts) == 4
 
     def test_load_config_serialize(self):
         # Test serialization needed by the viewer
@@ -33,7 +33,7 @@ class TestConfig:
             config = BalancerConfiguration.load(fp)
             assert config
             assert isinstance(config, BalancerConfiguration)
-            assert len(config.hosts) == 3
+            assert len(config.hosts) == 4
             config.model_dump_json(serialize_as_any=True)
 
     def test_load_config_hydra(self):
@@ -41,8 +41,8 @@ class TestConfig:
             config = load_config("config", "config")
             assert config
             assert "balancer" in config.extensions
-            assert len(config.extensions["balancer"].hosts) == 3
-            assert [x.name for x in config.extensions["balancer"].hosts] == ["host1", "host2", "host3"]
+            assert len(config.extensions["balancer"].hosts) == 4
+            assert [x.name for x in config.extensions["balancer"].hosts] == ["host0", "host1", "host2", "host3"]
             assert config.extensions["balancer"].default_username == "test"
             for host in config.extensions["balancer"].hosts:
                 assert host.hook()

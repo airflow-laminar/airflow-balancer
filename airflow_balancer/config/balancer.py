@@ -1,4 +1,5 @@
 from fnmatch import fnmatch
+from logging import getLogger
 from pathlib import Path
 from random import choice
 from typing import Callable, List, Optional, Union
@@ -13,6 +14,8 @@ from .host import Host
 from .port import Port
 
 __all__ = ("BalancerConfiguration",)
+
+_log = getLogger(__name__)
 
 
 class BalancerConfiguration(BaseModel):
@@ -126,6 +129,10 @@ class BalancerConfiguration(BaseModel):
             #     description=f"Balancer pool for host({port.port}) port({port.port})",
             #     include_deferred=True,
             # )
+
+        # sort hosts by name, sort ports by host name then port number
+        self.hosts = sorted(self.hosts, key=lambda host: host.name)
+        self.ports = sorted(self.ports, key=lambda port: (port.host.name, port.port))
         return self
 
     def filter_hosts(
@@ -171,7 +178,9 @@ class BalancerConfiguration(BaseModel):
         if not candidates:
             raise RuntimeError(f"No host found for {name} / {queue} / {os} / {tag}")
         # TODO more schemes, interrogate usage
-        return choice(candidates)
+        ret = choice(candidates)
+        _log.info(f"Selected host: {ret.name} ({ret.os})")
+        return ret
 
     def filter_ports(
         self,
@@ -205,7 +214,9 @@ class BalancerConfiguration(BaseModel):
             raise RuntimeError(f"No port found for {name} / {tag}")
         # TODO more schemes, interrogate usage
         # TODO select by host
-        return choice(candidates)
+        ret = choice(candidates)
+        _log.info(f"Selected port: {ret.name} ({ret.host.name})")
+        return ret
 
     def free_port(
         self,
