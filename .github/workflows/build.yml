@@ -30,18 +30,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.11"]
 
     steps:
     - uses: actions/checkout@v4
-
     - uses: actions-ext/python/setup@main
-      with:
-        version: ${{ matrix.python-version }}
-
     - uses: actions-ext/node/setup@main
-      with:
-        version: 20.x
 
     - name: Install dependencies
       run: make develop
@@ -61,7 +54,7 @@ jobs:
     - name: Upload test results (Python)
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
+        name: test-results-${{ matrix.os }}
         path: junit.xml
       if: ${{ always() }}
 
