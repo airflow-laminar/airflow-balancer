@@ -31,7 +31,7 @@ classifiers = [
 dependencies = [
     "apache-airflow>=2.8",
     "apache-airflow-providers-ssh",
-    "airflow-config>=1.7,<1.8",
+    "airflow-config>=1.7,<1.9",
     "hydra-core",
     "omegaconf",
     "pydantic>=2",
