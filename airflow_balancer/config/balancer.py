@@ -13,7 +13,7 @@ from typing_extensions import Self
 from .host import Host
 from .port import Port
 
-__all__ = ("BalancerConfiguration",)
+__all__ = ("BalancerConfiguration", "load")
 
 _log = getLogger(__name__)
 
