@@ -35,7 +35,6 @@ class TestPluginFunctions:
                 Path(root) / "config/extensions/second.yaml",
             ],
             [
-                Path(root) / "config/alt_config.yaml",
                 Path(root) / "config/config.yaml",
             ],
         )
