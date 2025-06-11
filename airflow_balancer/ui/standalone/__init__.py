@@ -85,8 +85,8 @@ def build_app() -> FastAPI:
         dags_folder = os.environ.get("AIRFLOW__CORE__DAGS_FOLDER", os.environ.get("AIRFLOW_HOME", Path(__file__).parent.parent.parent / "tests"))
         if not dags_folder:
             return templates.TemplateResponse("airflow_balancer/404.html", fab_common_mock)
-        yamls = get_yaml_files(dags_folder=dags_folder)
-        return templates.TemplateResponse("home.html", {"yamls": yamls, **fab_common_mock})
+        yamls, yamls_airflow_config = get_yaml_files(dags_folder)
+        return templates.TemplateResponse("home.html", {"yamls": yamls, "yamls_airflow_config": yamls_airflow_config, **fab_common_mock})
 
     @app.get("/hosts")
     async def hosts(yaml: str = ""):

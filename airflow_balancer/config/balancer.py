@@ -5,7 +5,9 @@ from random import choice
 from typing import Callable, List, Optional, Union
 
 from airflow.models.pool import Pool, PoolNotFound  # noqa: F401
+from airflow_config import load_config as load_airflow_config
 from hydra import compose, initialize_config_dir
+from hydra.errors import HydraException
 from hydra.utils import instantiate
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Self
@@ -13,7 +15,7 @@ from typing_extensions import Self
 from .host import Host
 from .port import Port
 
-__all__ = ("BalancerConfiguration", "load")
+__all__ = ("BalancerConfiguration", "load_config")
 
 _log = getLogger(__name__)
 
@@ -232,7 +234,7 @@ class BalancerConfiguration(BaseModel):
         return port
 
     @staticmethod
-    def load(yaml_file: str | Path) -> Self:
+    def load_path(yaml_file: str | Path, _config_dir: str | Path = None) -> Self:
         """Load configuration from yaml file"""
         if not isinstance(yaml_file, Path):
             yaml_file = Path(yaml_file).resolve()
@@ -240,7 +242,7 @@ class BalancerConfiguration(BaseModel):
             raise ValueError(f"File {yaml_file} must end in .yaml")
 
         file_name = yaml_file.stem
-        config_dir = str(yaml_file.parent)
+        config_dir = str(_config_dir or yaml_file.parent)
 
         # TODO: how to get the underlying value directly
         with initialize_config_dir(config_dir=config_dir, version_base=None):
@@ -268,5 +270,37 @@ class BalancerConfiguration(BaseModel):
                     raise ValueError(f"Config {file_name} does not contain a BalancerConfiguration")
             return config
 
+    @staticmethod
+    def load(
+        config_dir: Path | str = "config",
+        config_name: Path | str = "",
+        overrides: Optional[list[str]] = None,
+        *,
+        basepath: str = "",
+        _offset: int = 4,
+    ) -> "BalancerConfiguration":
+        try:
+            _log.info(f"Loading balancer configuration from {config_dir} with name {config_name}")
+            cfg = load_airflow_config(
+                config_dir=str(config_dir),
+                config_name=str(config_name),
+                overrides=overrides,
+                basepath=basepath,
+                _offset=_offset,
+            )
+            if cfg.balancer and isinstance(cfg.balancer, BalancerConfiguration):
+                return cfg.balancer
+            elif cfg.extensions:
+                for ext in cfg.extensions.values():
+                    if isinstance(ext, BalancerConfiguration):
+                        return ext
+        except HydraException:
+            pass
+        _log.warning(f"Balancer configuration not found in {config_dir} with name {config_name}, loading default")
+        return BalancerConfiguration.load_path(
+            yaml_file=Path(config_dir) / f"{config_name or 'balancer'}.yaml",
+            _config_dir=config_dir,
+        )
 
-load = BalancerConfiguration.load
+
+load_config = BalancerConfiguration.load

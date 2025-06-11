@@ -28,17 +28,23 @@ class TestAirflowPlugin:
 class TestPluginFunctions:
     def test_plugin_functions_get_yamls(self):
         root = Path(__file__).parent
-        assert get_yaml_files(root / "config") == [
-            Path(root) / "config/extensions/default.yaml",
-            Path(root) / "config/extensions/balancer.yaml",
-            Path(root) / "config/extensions/second.yaml",
-        ]
+        assert get_yaml_files(root / "config") == (
+            [
+                Path(root) / "config/extensions/default.yaml",
+                Path(root) / "config/extensions/balancer.yaml",
+                Path(root) / "config/extensions/second.yaml",
+            ],
+            [
+                Path(root) / "config/alt_config.yaml",
+                Path(root) / "config/config.yaml",
+            ],
+        )
 
     def test_plugin_functions_load_yamls(self):
         root = Path(__file__).parent
         with pools():
-            assert isinstance(BalancerConfiguration.load(Path(root) / "config/extensions/default.yaml"), BalancerConfiguration)
-            assert isinstance(BalancerConfiguration.load(Path(root) / "config/extensions/balancer.yaml"), BalancerConfiguration)
+            assert isinstance(BalancerConfiguration.load_path(Path(root) / "config/extensions/default.yaml"), BalancerConfiguration)
+            assert isinstance(BalancerConfiguration.load_path(Path(root) / "config/extensions/balancer.yaml"), BalancerConfiguration)
 
     def test_plugin_functions_get_hosts(self):
         root = Path(__file__).parent
@@ -48,6 +54,13 @@ class TestPluginFunctions:
         )
         assert (
             get_hosts_from_yaml(Path(root) / "config/extensions/balancer.yaml")
+            == '{"hosts":[{"name":"host0","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host0","size":8,"queues":["workers"],"tags":[]},{"name":"host1","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host1","size":16,"queues":["primary"],"tags":[]},{"name":"host2","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host2","size":16,"queues":["workers"],"tags":[]},{"name":"host3","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"macos","pool":"host3","size":8,"queues":["workers"],"tags":[]}],"ports":[{"name":"","host":{"name":"host1","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host1","size":16,"queues":["primary"],"tags":[]},"host_name":"host1","port":8000,"tags":[]},{"name":"named-port","host":{"name":"host1","username":null,"password":null,"password_variable":null,"password_variable_key":null,"key_file":null,"os":"ubuntu","pool":null,"size":16,"queues":["primary"],"tags":[]},"host_name":"","port":8080,"tags":[]},{"name":"","host":{"name":"host2","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host2","size":16,"queues":["workers"],"tags":[]},"host_name":"host2","port":8793,"tags":[]}],"default_username":"test","default_password":null,"default_password_variable":null,"default_password_variable_key":null,"default_key_file":"/home/airflow/.ssh/id_rsa","primary_queue":"primary","secondary_queue":"workers","default_queue":"default","default_size":8,"override_pool_size":false,"create_connection":false}'
+        )
+
+    def test_plugin_functions_get_hosts_airflow_config(self):
+        root = Path(__file__).parent
+        assert (
+            get_hosts_from_yaml(Path(root) / "config/config.yaml")
             == '{"hosts":[{"name":"host0","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host0","size":8,"queues":["workers"],"tags":[]},{"name":"host1","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host1","size":16,"queues":["primary"],"tags":[]},{"name":"host2","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host2","size":16,"queues":["workers"],"tags":[]},{"name":"host3","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"macos","pool":"host3","size":8,"queues":["workers"],"tags":[]}],"ports":[{"name":"","host":{"name":"host1","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host1","size":16,"queues":["primary"],"tags":[]},"host_name":"host1","port":8000,"tags":[]},{"name":"named-port","host":{"name":"host1","username":null,"password":null,"password_variable":null,"password_variable_key":null,"key_file":null,"os":"ubuntu","pool":null,"size":16,"queues":["primary"],"tags":[]},"host_name":"","port":8080,"tags":[]},{"name":"","host":{"name":"host2","username":"test","password":null,"password_variable":null,"password_variable_key":null,"key_file":"/home/airflow/.ssh/id_rsa","os":"ubuntu","pool":"host2","size":16,"queues":["workers"],"tags":[]},"host_name":"host2","port":8793,"tags":[]}],"default_username":"test","default_password":null,"default_password_variable":null,"default_password_variable_key":null,"default_key_file":"/home/airflow/.ssh/id_rsa","primary_queue":"primary","secondary_queue":"workers","default_queue":"default","default_size":8,"override_pool_size":false,"create_connection":false}'
         )
 
