@@ -43,8 +43,8 @@ class AirflowBalancerViewerPluginView(BaseView):
         dags_folder = os.environ.get("AIRFLOW__CORE__DAGS_FOLDER", conf.getsection("core").get("dags_folder"))
         if not dags_folder:
             return self.render_template("airflow_balancer/404.html")
-        yamls = get_yaml_files(dags_folder)
-        return self.render_template("airflow_balancer/home.html", yamls=yamls)
+        yamls, yamls_airflow_config = get_yaml_files(dags_folder)
+        return self.render_template("airflow_balancer/home.html", yamls=yamls, yamls_airflow_config=yamls_airflow_config)
 
 
 # Instantiate a view

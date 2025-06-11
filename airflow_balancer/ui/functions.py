@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from airflow_config import ConfigNotFoundError, load_config
+from airflow_config.ui.functions import get_yaml_files as airflow_config_get_yamls
 from hydra.errors import InstantiationException
 
 from airflow_balancer import BalancerConfiguration
@@ -16,12 +18,32 @@ __all__ = (
 def get_hosts_from_yaml(yaml: str) -> list[str]:
     # Process the yaml
     yaml_file = Path(yaml).resolve()
+    airflow_config_inst = None
+    inst: BalancerConfiguration | None = None
     try:
-        inst = BalancerConfiguration.load(yaml_file)
-    except InstantiationException:
-        # Mock SQL connections to instantiate
-        with pools():
-            inst = BalancerConfiguration.load(yaml_file)
+        airflow_config_inst = load_config(str(yaml_file.parent.name), yaml_file.name, overrides=[], basepath=str(yaml_file))
+    except (ConfigNotFoundError, InstantiationException):
+        try:
+            # Mock SQL connections to instantiate
+            with pools():
+                airflow_config_inst = load_config(str(yaml_file.parent.name), yaml_file.name, overrides=[], basepath=str(yaml_file))
+        except (ConfigNotFoundError, InstantiationException):
+            pass
+    if airflow_config_inst is not None:
+        if hasattr(airflow_config_inst, "balancer") and isinstance(airflow_config_inst.balancer, BalancerConfiguration):
+            inst = airflow_config_inst.balancer
+        elif hasattr(airflow_config_inst, "extensions"):
+            for ext in airflow_config_inst.extensions.values():
+                if isinstance(ext, BalancerConfiguration):
+                    inst = ext
+                    break
+    if inst is None:
+        try:
+            inst = BalancerConfiguration.load_path(yaml_file)
+        except InstantiationException:
+            # Mock SQL connections to instantiate
+            with pools():
+                inst = BalancerConfiguration.load_path(yaml_file)
     for host in inst.hosts:
         if host.password:
             host.password = "***"
@@ -56,4 +78,8 @@ def get_yaml_files(dags_folder: str) -> list[Path]:
                         break
         len_yamls_last = len_yamls
         len_yamls = len(yamls)
-    return yamls
+    try:
+        yamls_airflow_config = airflow_config_get_yamls(dags_folder)
+    except Exception:
+        yamls_airflow_config = []
+    return yamls, yamls_airflow_config

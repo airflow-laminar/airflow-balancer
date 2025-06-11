@@ -19,8 +19,26 @@ class TestConfig:
 
     def test_load_config_direct(self):
         with pools():
-            fp = str(Path(__file__).parent.resolve() / "config" / "extensions" / "default.yaml")
-            config = BalancerConfiguration.load(fp)
+            fp = Path(__file__).parent.resolve() / "config" / "extensions" / "default.yaml"
+            config = BalancerConfiguration.load_path(fp)
+            print(config)
+            assert config
+            assert isinstance(config, BalancerConfiguration)
+            assert len(config.hosts) == 4
+
+    def test_load_config_direct_via_airflow_config(self):
+        with pools():
+            fp = Path(__file__).parent.resolve() / "config" / "extensions" / "default.yaml"
+            config = BalancerConfiguration.load(config_name=fp.stem, config_dir=fp.parent)
+            print(config)
+            assert config
+            assert isinstance(config, BalancerConfiguration)
+            assert len(config.hosts) == 4
+
+    def test_load_config_direct_via_airflow_config_fallback(self):
+        with pools():
+            fp = Path(__file__).parent.resolve() / "config" / "extensions" / "default.yaml"
+            config = BalancerConfiguration.load(config_name=fp, config_dir="")
             print(config)
             assert config
             assert isinstance(config, BalancerConfiguration)
@@ -30,7 +48,7 @@ class TestConfig:
         # Test serialization needed by the viewer
         with pools():
             fp = str(Path(__file__).parent.resolve() / "config" / "extensions" / "balancer.yaml")
-            config = BalancerConfiguration.load(fp)
+            config = BalancerConfiguration.load_path(fp)
             assert config
             assert isinstance(config, BalancerConfiguration)
             assert len(config.hosts) == 4

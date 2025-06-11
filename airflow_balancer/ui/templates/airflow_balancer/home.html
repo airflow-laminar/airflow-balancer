@@ -6,6 +6,13 @@
             <li><a onclick="document.getElementById('yaml').value = this.innerHTML">{{ item }}</a></li>
         {% endfor %}
     </ul>
+    {% if yamls_airflow_config %}
+        <ul>
+            {% for item in yamls_airflow_config %}
+                <li><a onclick="document.getElementById('yaml').value = this.innerHTML">{{ item }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
     <h2>Manual:</h2>
     <form action="hosts" method="GET">
         <input type="text" id="yaml" name="yaml" value="" placeholder="Enter path to yaml" required style="width: 400px;">
