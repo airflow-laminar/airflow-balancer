@@ -251,7 +251,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">airflow.models.pool</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">PoolNotFound</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span> <span class="k">as</span> <span class="n">load_airflow_config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hydra</span><span class="w"> </span><span class="kn">import</span> <span class="n">compose</span><span class="p">,</span> <span class="n">initialize_config_dir</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydra.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">HydraException</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hydra.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">instantiate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
@@ -259,7 +261,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.host</span><span class="w"> </span><span class="kn">import</span> <span class="n">Host</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.port</span><span class="w"> </span><span class="kn">import</span> <span class="n">Port</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;BalancerConfiguration&quot;</span><span class="p">,</span> <span class="s2">&quot;load&quot;</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;BalancerConfiguration&quot;</span><span class="p">,</span> <span class="s2">&quot;load_config&quot;</span><span class="p">)</span>
 
 <span class="n">_log</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -494,10 +496,10 @@
         <span class="k">return</span> <span class="n">port</span></div>
 
 
-<div class="viewcode-block" id="BalancerConfiguration.load">
-<a class="viewcode-back" href="../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.load">[docs]</a>
+<div class="viewcode-block" id="BalancerConfiguration.load_path">
+<a class="viewcode-back" href="../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.load_path">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">_config_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load configuration from yaml file&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
             <span class="n">yaml_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
@@ -505,7 +507,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">yaml_file</span><span class="si">}</span><span class="s2"> must end in .yaml&quot;</span><span class="p">)</span>
 
         <span class="n">file_name</span> <span class="o">=</span> <span class="n">yaml_file</span><span class="o">.</span><span class="n">stem</span>
-        <span class="n">config_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">yaml_file</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">config_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">_config_dir</span> <span class="ow">or</span> <span class="n">yaml_file</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
 
         <span class="c1"># TODO: how to get the underlying value directly</span>
         <span class="k">with</span> <span class="n">initialize_config_dir</span><span class="p">(</span><span class="n">config_dir</span><span class="o">=</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -532,11 +534,46 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2"> does not contain a BalancerConfiguration&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">config</span></div>
+
+
+<div class="viewcode-block" id="BalancerConfiguration.load">
+<a class="viewcode-back" href="../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.load">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span>
+        <span class="n">config_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span>
+        <span class="n">config_name</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">overrides</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">basepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">_offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BalancerConfiguration&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading balancer configuration from </span><span class="si">{</span><span class="n">config_dir</span><span class="si">}</span><span class="s2"> with name </span><span class="si">{</span><span class="n">config_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">load_airflow_config</span><span class="p">(</span>
+                <span class="n">config_dir</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">config_dir</span><span class="p">),</span>
+                <span class="n">config_name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">config_name</span><span class="p">),</span>
+                <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">,</span>
+                <span class="n">basepath</span><span class="o">=</span><span class="n">basepath</span><span class="p">,</span>
+                <span class="n">_offset</span><span class="o">=</span><span class="n">_offset</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">balancer</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">balancer</span><span class="p">,</span> <span class="n">BalancerConfiguration</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">cfg</span><span class="o">.</span><span class="n">balancer</span>
+            <span class="k">elif</span> <span class="n">cfg</span><span class="o">.</span><span class="n">extensions</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">extensions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="n">BalancerConfiguration</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">ext</span>
+        <span class="k">except</span> <span class="n">HydraException</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Balancer configuration not found in </span><span class="si">{</span><span class="n">config_dir</span><span class="si">}</span><span class="s2"> with name </span><span class="si">{</span><span class="n">config_name</span><span class="si">}</span><span class="s2">, loading default&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span>
+            <span class="n">yaml_file</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">config_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config_name</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;balancer&#39;</span><span class="si">}</span><span class="s2">.yaml&quot;</span><span class="p">,</span>
+            <span class="n">_config_dir</span><span class="o">=</span><span class="n">config_dir</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </div>
 
 
 
-<span class="n">load</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load</span>
+<span class="n">load_config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load</span>
 </pre></div>
         </article>
       </div>
