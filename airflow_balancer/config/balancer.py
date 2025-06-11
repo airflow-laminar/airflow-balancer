@@ -14,6 +14,7 @@ from typing_extensions import Self
 
 from .host import Host
 from .port import Port
+from .query import BalancerHostQueryConfiguration
 
 __all__ = ("BalancerConfiguration", "load_config")
 
@@ -145,28 +146,15 @@ class BalancerConfiguration(BaseModel):
         tag: Optional[Union[str, List[str]]] = None,
         custom: Optional[Callable] = None,
     ) -> List[Host]:
-        name = name or []
-        queue = queue or []
-        os = os or []
-        tag = tag or []
-        if isinstance(name, str):
-            name = [name]
-        if isinstance(queue, str):
-            queue = [queue]
-        if isinstance(os, str):
-            os = [os]
-        if isinstance(tag, str):
-            tag = [tag]
-
-        return [
-            host
-            for host in self.all_hosts
-            if (not name or any(fnmatch(host.name, n) for n in name))
-            and (not queue or any(fnmatch(host_queue, queue_pat) for queue_pat in queue for host_queue in host.queues))
-            and (not tag or any(fnmatch(host_tag, tag_pat) for tag_pat in tag for host_tag in host.tags))
-            and (not os or any(fnmatch(host.os, o) for o in os))
-            and (not custom or custom(host))
-        ]
+        query = BalancerHostQueryConfiguration(
+            kind="filter",
+            name=name,
+            queue=queue,
+            os=os,
+            tag=tag,
+            custom=custom,
+        )
+        return query.execute(self.all_hosts)
 
     def select_host(
         self,
@@ -176,13 +164,15 @@ class BalancerConfiguration(BaseModel):
         tag: Union[str, List[str]] = "",
         custom: Callable = None,
     ) -> List[Host]:
-        candidates = self.filter_hosts(name=name, queue=queue, os=os, tag=tag, custom=custom)
-        if not candidates:
-            raise RuntimeError(f"No host found for {name} / {queue} / {os} / {tag}")
-        # TODO more schemes, interrogate usage
-        ret = choice(candidates)
-        _log.info(f"Selected host: {ret.name} ({ret.os})")
-        return ret
+        query = BalancerHostQueryConfiguration(
+            kind="select",
+            name=name,
+            queue=queue,
+            os=os,
+            tag=tag,
+            custom=custom,
+        )
+        return query.execute(self.all_hosts)
 
     def filter_ports(
         self,
