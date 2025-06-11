@@ -260,6 +260,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.host</span><span class="w"> </span><span class="kn">import</span> <span class="n">Host</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.port</span><span class="w"> </span><span class="kn">import</span> <span class="n">Port</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.query</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerHostQueryConfiguration</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;BalancerConfiguration&quot;</span><span class="p">,</span> <span class="s2">&quot;load_config&quot;</span><span class="p">)</span>
 
@@ -395,28 +396,15 @@
         <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">custom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="n">os</span> <span class="o">=</span> <span class="n">os</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">queue</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">os</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">os</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">tag</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">host</span>
-            <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_hosts</span>
-            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">name</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">name</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">queue</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">host_queue</span><span class="p">,</span> <span class="n">queue_pat</span><span class="p">)</span> <span class="k">for</span> <span class="n">queue_pat</span> <span class="ow">in</span> <span class="n">queue</span> <span class="k">for</span> <span class="n">host_queue</span> <span class="ow">in</span> <span class="n">host</span><span class="o">.</span><span class="n">queues</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">tag</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">host_tag</span><span class="p">,</span> <span class="n">tag_pat</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag_pat</span> <span class="ow">in</span> <span class="n">tag</span> <span class="k">for</span> <span class="n">host_tag</span> <span class="ow">in</span> <span class="n">host</span><span class="o">.</span><span class="n">tags</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">os</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">os</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">custom</span> <span class="ow">or</span> <span class="n">custom</span><span class="p">(</span><span class="n">host</span><span class="p">))</span>
-        <span class="p">]</span></div>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">BalancerHostQueryConfiguration</span><span class="p">(</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">=</span><span class="n">os</span><span class="p">,</span>
+            <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
+            <span class="n">custom</span><span class="o">=</span><span class="n">custom</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_hosts</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BalancerConfiguration.select_host">
@@ -429,13 +417,15 @@
         <span class="n">tag</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">custom</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
-        <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="n">os</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">custom</span><span class="o">=</span><span class="n">custom</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No host found for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">queue</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">os</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="c1"># TODO more schemes, interrogate usage</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
-        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected host: </span><span class="si">{</span><span class="n">ret</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">ret</span><span class="o">.</span><span class="n">os</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ret</span></div>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">BalancerHostQueryConfiguration</span><span class="p">(</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;select&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">=</span><span class="n">os</span><span class="p">,</span>
+            <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
+            <span class="n">custom</span><span class="o">=</span><span class="n">custom</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_hosts</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BalancerConfiguration.filter_ports">
