@@ -1,4 +1,0 @@
-# @package _global_
-_target_: airflow_config.Configuration
-defaults:
-  - extensions/balancer@balancer

@@ -288,9 +288,7 @@ class BalancerConfiguration(BaseModel):
                 basepath=basepath,
                 _offset=_offset,
             )
-            if cfg.balancer and isinstance(cfg.balancer, BalancerConfiguration):
-                return cfg.balancer
-            elif cfg.extensions:
+            if cfg.extensions:
                 for ext in cfg.extensions.values():
                     if isinstance(ext, BalancerConfiguration):
                         return ext
