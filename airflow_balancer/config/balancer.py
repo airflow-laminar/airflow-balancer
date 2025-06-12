@@ -5,7 +5,6 @@ from random import choice
 from typing import Callable, List, Optional, Union
 
 from airflow.models.pool import Pool, PoolNotFound  # noqa: F401
-from airflow_config import load_config as load_airflow_config
 from hydra import compose, initialize_config_dir
 from hydra.errors import HydraException
 from hydra.utils import instantiate
@@ -14,7 +13,6 @@ from typing_extensions import Self
 
 from .host import Host
 from .port import Port
-from .query import BalancerHostQueryConfiguration
 
 __all__ = ("BalancerConfiguration", "load_config")
 
@@ -146,6 +144,8 @@ class BalancerConfiguration(BaseModel):
         tag: Optional[Union[str, List[str]]] = None,
         custom: Optional[Callable] = None,
     ) -> List[Host]:
+        from .query import BalancerHostQueryConfiguration
+
         query = BalancerHostQueryConfiguration(
             kind="filter",
             name=name,
@@ -153,8 +153,9 @@ class BalancerConfiguration(BaseModel):
             os=os,
             tag=tag,
             custom=custom,
+            balancer=self,
         )
-        return query.execute(self.all_hosts)
+        return query.execute()
 
     def select_host(
         self,
@@ -164,6 +165,8 @@ class BalancerConfiguration(BaseModel):
         tag: Union[str, List[str]] = "",
         custom: Callable = None,
     ) -> List[Host]:
+        from .query import BalancerHostQueryConfiguration
+
         query = BalancerHostQueryConfiguration(
             kind="select",
             name=name,
@@ -171,8 +174,9 @@ class BalancerConfiguration(BaseModel):
             os=os,
             tag=tag,
             custom=custom,
+            balancer=self,
         )
-        return query.execute(self.all_hosts)
+        return query.execute()
 
     def filter_ports(
         self,
@@ -269,6 +273,8 @@ class BalancerConfiguration(BaseModel):
         basepath: str = "",
         _offset: int = 4,
     ) -> "BalancerConfiguration":
+        from airflow_config import load_config as load_airflow_config
+
         try:
             _log.info(f"Loading balancer configuration from {config_dir} with name {config_name}")
             cfg = load_airflow_config(

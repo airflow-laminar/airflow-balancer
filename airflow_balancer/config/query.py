@@ -3,9 +3,10 @@ from logging import getLogger
 from random import choice
 from typing import Callable, List, Literal, Optional, Union
 
-from airflow_pydantic import CallablePath
+from pkn.pydantic import CallablePath
 from pydantic import BaseModel, Field
 
+from .balancer import BalancerConfiguration
 from .host import Host
 
 __all__ = ("BalancerHostQueryConfiguration",)
@@ -18,19 +19,20 @@ class BalancerHostQueryConfiguration(BaseModel):
         default="select",
         description="Kind of query to perform, either 'filter' to return a list of matching hosts or 'select' to return a single host.",
     )
-    name: Optional[Union[str, List[str]]] = (None,)
-    queue: Optional[Union[str, List[str]]] = (None,)
-    os: Optional[Union[str, List[str]]] = (None,)
-    tag: Optional[Union[str, List[str]]] = (None,)
-    custom: Optional[Union[Callable, CallablePath]] = (None,)
+    balancer: BalancerConfiguration
+    name: Optional[Union[str, List[str]]] = None
+    queue: Optional[Union[str, List[str]]] = None
+    os: Optional[Union[str, List[str]]] = None
+    tag: Optional[Union[str, List[str]]] = None
+    custom: Optional[Union[Callable, CallablePath]] = None
 
     def execute(
         self,
-        hosts: List[Host],
     ) -> Union[List[Host], Host]:
         """
         Execute the query against the provided hosts and ports.
         """
+        hosts = self.balancer.all_hosts
         name = self.name or []
         queue = self.queue or []
         os = self.os or []
