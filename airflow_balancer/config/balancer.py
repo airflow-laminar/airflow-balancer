@@ -5,7 +5,6 @@ from random import choice
 from typing import Callable, List, Optional, Union
 
 from airflow.models.pool import Pool, PoolNotFound  # noqa: F401
-from airflow_config import load_config as load_airflow_config
 from hydra import compose, initialize_config_dir
 from hydra.errors import HydraException
 from hydra.utils import instantiate
@@ -274,6 +273,8 @@ class BalancerConfiguration(BaseModel):
         basepath: str = "",
         _offset: int = 4,
     ) -> "BalancerConfiguration":
+        from airflow_config import load_config as load_airflow_config
+
         try:
             _log.info(f"Loading balancer configuration from {config_dir} with name {config_name}")
             cfg = load_airflow_config(
