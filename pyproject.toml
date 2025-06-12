@@ -32,7 +32,6 @@ dependencies = [
     "apache-airflow>=2.8",
     "apache-airflow-providers-ssh",
     "airflow-config>=1.9,<1.10",
-    "airflow-pydantic",
     "hydra-core",
     "omegaconf",
     "pkn>=0.1.3",
