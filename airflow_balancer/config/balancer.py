@@ -14,7 +14,6 @@ from typing_extensions import Self
 
 from .host import Host
 from .port import Port
-from .query import BalancerHostQueryConfiguration
 
 __all__ = ("BalancerConfiguration", "load_config")
 
@@ -146,6 +145,8 @@ class BalancerConfiguration(BaseModel):
         tag: Optional[Union[str, List[str]]] = None,
         custom: Optional[Callable] = None,
     ) -> List[Host]:
+        from .query import BalancerHostQueryConfiguration
+
         query = BalancerHostQueryConfiguration(
             kind="filter",
             name=name,
@@ -153,8 +154,9 @@ class BalancerConfiguration(BaseModel):
             os=os,
             tag=tag,
             custom=custom,
+            balancer=self,
         )
-        return query.execute(self.all_hosts)
+        return query.execute()
 
     def select_host(
         self,
@@ -164,6 +166,8 @@ class BalancerConfiguration(BaseModel):
         tag: Union[str, List[str]] = "",
         custom: Callable = None,
     ) -> List[Host]:
+        from .query import BalancerHostQueryConfiguration
+
         query = BalancerHostQueryConfiguration(
             kind="select",
             name=name,
@@ -171,8 +175,9 @@ class BalancerConfiguration(BaseModel):
             os=os,
             tag=tag,
             custom=custom,
+            balancer=self,
         )
-        return query.execute(self.all_hosts)
+        return query.execute()
 
     def filter_ports(
         self,
