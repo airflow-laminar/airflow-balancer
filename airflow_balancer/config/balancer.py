@@ -5,10 +5,12 @@ from random import choice
 from typing import Callable, List, Optional, Union
 
 from airflow.models.pool import Pool, PoolNotFound  # noqa: F401
+from airflow.utils.dag_parsing_context import get_parsing_context
 from hydra import compose, initialize_config_dir
 from hydra.errors import HydraException
 from hydra.utils import instantiate
 from pydantic import BaseModel, Field, model_validator
+from sqlalchemy.exc import OperationalError
 from typing_extensions import Self
 
 from .host import Host
@@ -74,28 +76,38 @@ class BalancerConfiguration(BaseModel):
                 host.pool = host.name
             if not host.size:
                 host.size = self.default_size
-            # check airflow first
-            try:
-                res = Pool.get_pool(host.pool)
 
-                # airflow return value differs version-to-version
-                if res is None:
-                    raise PoolNotFound
-                elif res.slots != host.size:
-                    if self.override_pool_size:
+            if get_parsing_context().dag_id is not None:
+                # check airflow first
+                try:
+                    res = Pool.get_pool(host.pool)
+
+                    # airflow return value differs version-to-version
+                    if res is None:
+                        raise PoolNotFound
+                    elif res.slots != host.size:
+                        if self.override_pool_size:
+                            Pool.create_or_update_pool(
+                                name=host.pool,
+                                slots=host.size,
+                                description=f"Balancer pool for host({host.name}) pool({host.pool})",
+                                include_deferred=False,
+                            )
+                        else:
+                            host.size = res.slots
+                except PoolNotFound:
+                    try:
+                        # else set to default
                         Pool.create_or_update_pool(
                             name=host.pool,
                             slots=host.size,
                             description=f"Balancer pool for host({host.name}) pool({host.pool})",
                             include_deferred=False,
                         )
-                    else:
-                        host.size = res.slots
-            except PoolNotFound:
-                # else set to default
-                Pool.create_or_update_pool(
-                    name=host.pool, slots=host.size, description=f"Balancer pool for host({host.name}) pool({host.pool})", include_deferred=False
-                )
+                    except OperationalError:
+                        # If the database is not available, we cannot create the pool
+                        pass
+
             if not host.username and self.default_username:
                 host.username = self.default_username
             if not host.password and self.default_password:
