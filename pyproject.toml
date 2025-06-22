@@ -130,7 +130,9 @@ exclude = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["airflow_balancer"]
-exclude = ["js"]
+exclude = [
+    "/js"
+]
 
 [tool.hatch.build.targets.wheel.shared-data]
 
