@@ -1,4 +1,3 @@
-from fnmatch import fnmatch
 from logging import getLogger
 from pathlib import Path
 from random import choice
@@ -196,20 +195,16 @@ class BalancerConfiguration(BaseModel):
         tag: Optional[Union[str, List[str]]] = None,
         custom: Optional[Callable] = None,
     ) -> List[Host]:
-        name = name or []
-        tag = tag or []
-        if isinstance(name, str):
-            name = [name]
-        if isinstance(tag, str):
-            tag = [tag]
+        from .query import BalancerPortQueryConfiguration
 
-        return [
-            port
-            for port in self.all_ports
-            if (not name or any(fnmatch(port.name, n) for n in name))
-            and (not tag or any(fnmatch(port_tag, tag_pat) for tag_pat in tag for port_tag in port.tags))
-            and (not custom or custom(port))
-        ]
+        query = BalancerPortQueryConfiguration(
+            kind="filter",
+            name=name,
+            tag=tag,
+            custom=custom,
+            balancer=self,
+        )
+        return query.execute()
 
     def select_port(
         self,
@@ -217,14 +212,16 @@ class BalancerConfiguration(BaseModel):
         tag: Union[str, List[str]] = "",
         custom: Callable = None,
     ) -> List[Host]:
-        candidates = self.filter_ports(name=name, tag=tag, custom=custom)
-        if not candidates:
-            raise RuntimeError(f"No port found for {name} / {tag}")
-        # TODO more schemes, interrogate usage
-        # TODO select by host
-        ret = choice(candidates)
-        _log.info(f"Selected port: {ret.name} ({ret.host.name})")
-        return ret
+        from .query import BalancerPortQueryConfiguration
+
+        query = BalancerPortQueryConfiguration(
+            kind="select",
+            name=name,
+            tag=tag,
+            custom=custom,
+            balancer=self,
+        )
+        return query.execute()
 
     def free_port(
         self,
