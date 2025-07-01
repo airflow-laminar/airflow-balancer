@@ -1,8 +1,10 @@
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from airflow.models.variable import Variable
-from airflow.providers.ssh.hooks.ssh import SSHHook
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from airflow_pydantic.airflow import SSHHook
+
 
 __all__ = ("Host",)
 
@@ -32,7 +34,9 @@ class Host(BaseModel):
     def override(self, **kwargs) -> "Host":
         return Host(**{**self.model_dump(), **kwargs})
 
-    def hook(self, username: str = None, use_local: bool = True, **hook_kwargs) -> SSHHook:
+    def hook(self, username: str = None, use_local: bool = True, **hook_kwargs) -> "SSHHook":
+        from airflow_pydantic.airflow import SSHHook, Variable
+
         if use_local and not self.name.count(".") > 0:
             name = f"{self.name}.local"
         else:

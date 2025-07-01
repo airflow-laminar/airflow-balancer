@@ -1,5 +1,5 @@
 import pytest
-from airflow.models.pool import PoolNotFound
+from airflow_pydantic.airflow import PoolNotFound
 from pydantic import ValidationError
 
 from airflow_balancer import BalancerConfiguration, Host, Port

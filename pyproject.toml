@@ -60,7 +60,7 @@ develop = [
 
 
 [project.entry-points."airflow.plugins"]
-airflow-balancer-viewer = "airflow_balancer.ui:AirflowBalancerViewerPlugin"
+airflow-balancer-viewer = "airflow_balancer.ui.airflow:AirflowBalancerViewerPlugin"
 
 [project.scripts]
 airflow-balancer-viewer = "airflow_balancer.ui.standalone:main"
