@@ -40,7 +40,7 @@
     "@finos/perspective": "^3.6.1",
     "@finos/perspective-viewer": "^3.6.1",
     "@finos/perspective-viewer-d3fc": "^3.6.1",
-    "@finos/perspective-viewer-datagrid": "^3.6.1",
+    "@finos/perspective-viewer-datagrid": "^3.7.0",
     "@shoelace-style/shoelace": "^2.20.1",
     "lit": "^3.3.0"
   },
