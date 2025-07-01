@@ -29,8 +29,6 @@ classifiers = [
 ]
 
 dependencies = [
-    "apache-airflow>=2.8",
-    "apache-airflow-providers-ssh",
     "airflow-config>=1.10,<1.11",
     "hydra-core",
     "omegaconf",
@@ -51,6 +49,9 @@ develop = [
     "twine",
     "uv",
     "wheel",
+    # Airflow
+    "apache-airflow>=2.8",
+    "apache-airflow-providers-ssh",
     # Standalone UI
     "flask_appbuilder",
     "flask",
