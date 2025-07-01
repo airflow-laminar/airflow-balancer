@@ -3,8 +3,6 @@ from pathlib import Path
 from random import choice
 from typing import Callable, List, Optional, Union
 
-from airflow.models.pool import Pool, PoolNotFound  # noqa: F401
-from airflow.utils.dag_parsing_context import get_parsing_context
 from hydra import compose, initialize_config_dir
 from hydra.errors import HydraException
 from hydra.utils import instantiate
@@ -62,6 +60,8 @@ class BalancerConfiguration(BaseModel):
 
     @model_validator(mode="after")
     def _validate(self) -> Self:
+        from airflow_pydantic.airflow import Pool, PoolNotFound, get_parsing_context
+
         # Validate no duplicate hosts
         seen_hostnames = set()
         for host in self.hosts:

@@ -1,6 +1,8 @@
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from airflow_balancer import BalancerConfiguration
 from airflow_balancer.testing import pools
 from airflow_balancer.ui.functions import get_hosts_from_yaml, get_yaml_files
@@ -9,7 +11,10 @@ from airflow_balancer.ui.standalone import build_app, main
 
 class TestAirflowPlugin:
     def test_plugin(self):
-        from airflow_balancer.ui.viewer import AirflowBalancerViewerPlugin, AirflowBalancerViewerPluginView
+        try:
+            from airflow_balancer.ui.airflow import AirflowBalancerViewerPlugin, AirflowBalancerViewerPluginView
+        except ImportError:
+            return pytest.skip("Airflow not installed")
 
         AirflowBalancerViewerPluginView()
         AirflowBalancerViewerPlugin()

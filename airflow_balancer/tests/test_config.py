@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from airflow.models.pool import PoolNotFound
 from airflow_config import load_config
+from airflow_pydantic.airflow import PoolNotFound
 
 from airflow_balancer import BalancerConfiguration
 from airflow_balancer.testing import pools

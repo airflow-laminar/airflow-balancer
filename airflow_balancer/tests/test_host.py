@@ -1,6 +1,6 @@
 from getpass import getuser
 
-from airflow.models.pool import PoolNotFound
+from airflow_pydantic.airflow import PoolNotFound
 
 from airflow_balancer import BalancerConfiguration, Host
 from airflow_balancer.testing import pools, variables

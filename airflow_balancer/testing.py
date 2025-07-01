@@ -6,7 +6,7 @@ __all__ = ("pools", "variables")
 
 @contextmanager
 def pools(return_value=None, side_effect=None):
-    with patch("airflow_balancer.config.balancer.Pool") as pool_mock, patch("airflow_balancer.config.balancer.get_parsing_context") as context_mock:
+    with patch("airflow_pydantic.airflow.Pool") as pool_mock, patch("airflow_pydantic.airflow.get_parsing_context") as context_mock:
         pool_mock.get_pool.return_value = return_value
         if side_effect:
             pool_mock.get_pool.side_effect = side_effect
@@ -17,7 +17,7 @@ def pools(return_value=None, side_effect=None):
 
 @contextmanager
 def variables(return_value=None, side_effect=None):
-    with patch("airflow.models.variable.Variable.get") as get_mock:
+    with patch("airflow_pydantic.airflow.Variable.get") as get_mock:
         get_mock.return_value = return_value
         if side_effect:
             get_mock.side_effect = side_effect
