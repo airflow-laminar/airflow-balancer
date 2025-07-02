@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, List, Optional
 
+from airflow_pydantic import Pool
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
@@ -25,7 +26,7 @@ class Host(BaseModel):
     os: Optional[str] = None
 
     # Airflow / balance
-    pool: Optional[str] = None
+    pool: Optional[Pool] = None
     size: Optional[int] = None
     queues: List[str] = Field(default_factory=list)
 

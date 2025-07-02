@@ -71,10 +71,14 @@ class BalancerConfiguration(BaseModel):
 
         # Handle limits
         for host in self.hosts:
-            if not host.pool:
-                host.pool = host.name
             if not host.size:
                 host.size = self.default_size
+            if not host.pool:
+                host.pool = Pool(
+                    pool=host.name,
+                    slots=host.size,
+                    description=f"Balancer pool for host({host.name})",
+                )
 
             if get_parsing_context().dag_id is not None:
                 # check airflow first
@@ -87,9 +91,9 @@ class BalancerConfiguration(BaseModel):
                     elif res.slots != host.size:
                         if self.override_pool_size:
                             Pool.create_or_update_pool(
-                                name=host.pool,
-                                slots=host.size,
-                                description=f"Balancer pool for host({host.name}) pool({host.pool})",
+                                pool=host.pool.pool,
+                                slots=host.pool.size,
+                                description=host.pool.description,
                                 include_deferred=False,
                             )
                         else:
@@ -98,9 +102,9 @@ class BalancerConfiguration(BaseModel):
                     try:
                         # else set to default
                         Pool.create_or_update_pool(
-                            name=host.pool,
+                            pool=host.name,
                             slots=host.size,
-                            description=f"Balancer pool for host({host.name}) pool({host.pool})",
+                            description=f"Balancer pool for host({host.name})",
                             include_deferred=False,
                         )
                     except OperationalError:
