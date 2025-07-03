@@ -1,6 +1,0 @@
-# @package _global_
-
-defaults:
-  - _self_
-
-_target_: airflow_balancer.BalancerConfiguration

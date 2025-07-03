@@ -1,4 +1,2 @@
-from .balancer import *
-from .host import *
-from .port import *
-from .query import *
+# Hoisted to avoid circular imports
+from airflow_pydantic.extras.balancer import *
