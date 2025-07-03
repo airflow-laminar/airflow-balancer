@@ -53,7 +53,7 @@ jobs:
       if: ${{ matrix.airflow != '' }}
 
     - name: Uninstall Airflow
-      run: uv pip uninstall apache-airflow
+      run: uv pip uninstall apache-airflow airflow
       if: ${{ matrix.airflow == '' }}
 
     - name: Lint
