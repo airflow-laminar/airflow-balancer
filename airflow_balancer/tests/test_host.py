@@ -1,5 +1,6 @@
 from getpass import getuser
 
+from airflow_pydantic import Variable
 from airflow_pydantic.airflow import PoolNotFound
 
 from airflow_balancer import BalancerConfiguration, Host
@@ -38,7 +39,7 @@ class TestConfig:
         assert h.hook().password == "test"
         assert h.hook().key_file is None
 
-        h = Host(name="test", username="test", password_variable="test")
+        h = Host(name="test", username="test", password=Variable(key="test"))
         with variables("test"):
             assert h.hook()
             assert h.hook().username == "test"
@@ -46,8 +47,8 @@ class TestConfig:
             assert h.hook().password == "test"
             assert h.hook().key_file is None
 
-        h = Host(name="test", username="test", password_variable="test", password_variable_key="test")
-        with variables({"test": "blerg"}, side_effect=lambda *args, **kwargs: {"test": "blerg"}):
+        h = Host(name="test", username="test", password=Variable(key="test", deserialize_json=True))
+        with variables({"password": "blerg"}, side_effect=lambda *args, **kwargs: {"password": "blerg"}):
             assert h.hook()
             assert h.hook().username == "test"
             assert h.hook().remote_host == "test.local"
