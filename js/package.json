@@ -1,6 +1,6 @@
 {
   "name": "airflow-balancer",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "Utilities for load balancing DAGs",
   "repository": "git@github.com:airflow-laminar/airflow-balancer.git",
   "author": "airflow-balancer <t.paine154@gmail.com>",
