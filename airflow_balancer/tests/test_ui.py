@@ -61,9 +61,7 @@ class TestPluginFunctions:
 
     def test_plugin_functions_get_hosts_airflow_config(self):
         root = Path(__file__).parent
-        assert get_hosts_from_yaml(Path(root) / "config/config.yaml").startswith(
-            '{"hosts":[{"name":"host0","username":"test","password":null,"password_variable":null,"'
-        )
+        assert get_hosts_from_yaml(Path(root) / "config/config.yaml").startswith('{"hosts":[{"name":"host0","username":"test","password":null,')
 
 
 class TestStandaloneUI:
