@@ -4,8 +4,12 @@ __pycache__/
 *$py.class
 
 # C extensions
+*.a
 *.so
+*.obj
 *.dll
+*.exp
+*.lib
 
 # Distribution / packaging
 .Python
@@ -143,15 +147,23 @@ index.md
 _template/labextension
 
 # JS
-js/node_modules
+js/coverage
 js/dist
+<<<<<<< before updating
 js/*.tgz
 airflow_balancer/ui/static
 
+=======
+js/lib
+js/node_modules
+airflow_balancer/extension
+>>>>>>> after updating
 
 # Jupyter
 .ipynb_checkpoints
 .autoversion
+airflow_balancer/nbextension
+airflow_balancer/labextension
 
 # Mac
 .DS_Store
