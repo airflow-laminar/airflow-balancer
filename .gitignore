@@ -128,32 +128,16 @@ index.md
 docs/_build/
 docs/src/_build/
 docs/api
-<<<<<<< before updating
-docs/html
-docs/src/_build
-index.md
-=======
 docs/index.md
 docs/html
 docs/jupyter_execute
->>>>>>> after updating
 index.md
 
 # JS
 js/coverage
 js/dist
-<<<<<<< before updating
-js/*.tgz
-airflow_balancer/ui/static
-
-=======
 js/lib
 js/node_modules
-<<<<<<< before updating
-airflow_balancer/extension
->>>>>>> after updating
-=======
->>>>>>> after updating
 
 # Jupyter
 .ipynb_checkpoints
