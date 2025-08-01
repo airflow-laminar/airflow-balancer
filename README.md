@@ -9,6 +9,7 @@ Utilities for tracking hosts and ports and load balancing DAGs
 
 ## Overview
 
+<<<<<<< before updating
 `airflow-balancer` is a utility library for Apache Airflow to track host and port usage via yaml files.
 It is tightly integrated with [airflow-laminar/airflow-config](https://github.com/airflow-laminar/airflow-config).
 
@@ -85,3 +86,7 @@ conda install airflow-balancer -c conda-forge
 ## License
 
 This software is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file for details.
+=======
+> [!NOTE]
+> This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).
+>>>>>>> after updating

@@ -39,8 +39,16 @@ develop = [
     "build",
     "bump-my-version",
     "check-manifest",
+<<<<<<< before updating
     "hatchling",
     "hatch-jupyter-builder",
+=======
+    "codespell>=2.4,<2.5",
+    "hatch-jupyter-builder",
+    "hatchling",
+    "mdformat>=0.7.22,<0.8",
+    "mdformat-tables>=1",
+>>>>>>> after updating
     "pytest",
     "pytest-cov",
     "ruff",
@@ -73,6 +81,7 @@ Homepage = "https://github.com/airflow-laminar/airflow-balancer"
 current_version = "0.7.6"
 commit = true
 tag = true
+commit_args = "-s"
 
 [[tool.bumpversion.files]]
 filename = "airflow_balancer/__init__.py"
@@ -94,7 +103,12 @@ ignore = [
     ".copier-answers.yaml",
     "js/pnpm-lock.yaml",
     "Makefile",
+<<<<<<< before updating
     "airflow_balancer/ui/static/**/*",
+=======
+    ".vscode/*",
+    "airflow_balancer/extension/**/*",
+>>>>>>> after updating
     "docs/**/*",
     "js/dist/**/*",
 ]
