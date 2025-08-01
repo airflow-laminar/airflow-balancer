@@ -67,7 +67,6 @@ Configuration, and Host and Port listing is built into the extension, available 
 
 <img src="https://raw.githubusercontent.com/airflow-laminar/airflow-balancer/refs/heads/main/docs/img/hosts.png" width=800>
 
-
 ## Installation
 
 You can install from pip:
