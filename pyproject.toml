@@ -136,30 +136,16 @@ exclude = [
     "/js"
 ]
 
-<<<<<<< before updating
 [tool.hatch.build.targets.wheel.shared-data]
 
-[tool.hatch.build.hooks.jupyter-builder]
-build-function = "hatch_jupyter_builder.npm_builder"
-ensured-targets = [
-    "airflow_balancer/ui/static/cdn/index.js",
-]
-skip-if-exists = [
-    "airflow_balancer/ui/static/cdn/index.js",
-]
-dependencies = [
-    "hatch-jupyter-builder",
-]
-
-[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
-=======
 [tool.hatch.build.hooks.hatch-js]
->>>>>>> after updating
 path = "js"
 install_cmd = "install"
 build_cmd = "build"
 tool = "pnpm"
-targets = ["airflow_balancer/extension/cdn/index.js"]
+targets = [
+    "airflow_balancer/ui/static/cdn/index.js",
+]
 
 [tool.pytest.ini_options]
 addopts = ["-vvv", "--junitxml=junit.xml"]
