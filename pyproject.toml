@@ -29,6 +29,7 @@ dependencies = [
     "airflow-pydantic>=1.4,<1.6",
     "airflow-config>=1.10,<1.11",
     "pydantic>=2",
+    "paramiko<4",
 ]
 
 [project.optional-dependencies]
@@ -140,7 +141,6 @@ exclude = [
 
 [tool.hatch.build.hooks.hatch-js]
 path = "js"
-install_cmd = "install"
 build_cmd = "build"
 tool = "pnpm"
 targets = [
