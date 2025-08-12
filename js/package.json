@@ -28,16 +28,9 @@
   "scripts": {
     "build:debug": "node build.mjs --debug",
     "build": "node build.mjs",
-<<<<<<< before updating
-    "clean": "rm -rf dist ../airflow_balancer/ui/static",
-    "lint": "prettier --check \"src/**/*\" \"tests/**/*\" \"*.mjs\" \"*.json\"",
-    "fix": "prettier  --write \"src/**/*\" \"tests/**/*\" \"*.mjs\" \"*.json\"",
-=======
-    "clean": "rm -rf dist playwright-report ../airflow_balancer/extension",
-    "dev": "npm-run-all -p start watch",
+    "clean": "rm -rf dist playwright-report ../airflow_balancer/ui/static",
     "lint": "prettier --check \"src/**/*.{js,ts,jsx,tsx,less,css}\" \"tests/**/*.{js,ts,jsx,tsx}\" \"*.mjs\" \"*.json\"",
     "fix": "prettier  --write \"src/**/*.{js,ts,jsx,tsx,less,css}\" \"tests/**/*.{js,ts,jsx,tsx}\" \"*.mjs\" \"*.json\"",
->>>>>>> after updating
     "preinstall": "npx only-allow pnpm",
     "prepack": "npm run build",
     "test": "echo TODO",
