@@ -54,7 +54,7 @@ develop = [
     "apache-airflow-providers-ssh",
     "apache-airflow-providers-standard",
     # Standalone UI
-    "flask_appbuilder",
+    "flask_appbuilder<5",
     "flask",
     "fastapi",
     "uvicorn",
