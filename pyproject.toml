@@ -55,6 +55,7 @@ develop = [
     "apache-airflow-providers-standard",
     # Standalone UI
     "flask_appbuilder<5",
+    "flask-limiter<3.13",
     "flask",
     "fastapi",
     "uvicorn",
