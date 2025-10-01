@@ -28,8 +28,8 @@ importers:
         specifier: ^0.25.8
         version: 0.25.8
       esbuild-plugin-less:
-        specifier: ^1.3.26
-        version: 1.3.26(esbuild@0.25.8)
+        specifier: ^1.3.27
+        version: 1.3.27(esbuild@0.25.8)
       http-server:
         specifier: ^14.1.1
         version: 14.1.1
@@ -453,10 +453,10 @@ packages:
     resolution: {integrity: sha512-w+5mJ3GuFL+NjVtJlvydShqE1eN3h3PbI7/5LAsYJP/2qtuMXjfL2LpHSRqo4b4eSF5K/DH1JXKUAHSB2UW50g==}
     engines: {node: '>= 0.4'}
 
-  esbuild-plugin-less@1.3.26:
-    resolution: {integrity: sha512-F+j7RS6JmFZHVf7I43z5TroEDsJ94dZgIJo095w+YcV1hV4K+HSYSZk5aJ23CmfpHYR8ZHe0QC7IO3qv2V+N/w==}
+  esbuild-plugin-less@1.3.27:
+    resolution: {integrity: sha512-GRD29/F9jmXkEoUBzbXXEgK6MVvKCBQJFO+lBH/HOiHlP+UMsx0ePx/4qeHfpJNYZtGKMZa8/WEodj3xUIoPvg==}
     peerDependencies:
-      esbuild: '>=0.14.0 <0.25.10'
+      esbuild: '>=0.14.0 <0.25.11'
 
   esbuild@0.25.8:
     resolution: {integrity: sha512-vVC0USHGtMi8+R4Kz8rt6JhEWLxsv9Rnu/lGYbPR8u47B+DCBksq9JarW0zOO7bs37hyOK1l2/oqtbciutL5+Q==}
@@ -1616,7 +1616,7 @@ snapshots:
       is-date-object: 1.1.0
       is-symbol: 1.1.1
 
-  esbuild-plugin-less@1.3.26(esbuild@0.25.8):
+  esbuild-plugin-less@1.3.27(esbuild@0.25.8):
     dependencies:
       '@types/less': 3.0.8
       esbuild: 0.25.8
