@@ -30,7 +30,6 @@ dependencies = [
     "airflow-pydantic>=1.4,<1.6",
     "airflow-config>=1.10,<1.12",
     "pydantic>=2",
-    "paramiko<4",
 ]
 
 [project.optional-dependencies]
@@ -53,6 +52,8 @@ develop = [
     "apache-airflow>=2.8,<3.1",
     "apache-airflow-providers-ssh",
     "apache-airflow-providers-standard",
+    "paramiko<4",
+    "structlog<25.5.0",
     # Standalone UI
     "flask_appbuilder",
     "flask-limiter<3.13",
