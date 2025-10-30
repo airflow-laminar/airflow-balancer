@@ -48,12 +48,6 @@ develop = [
     "twine",
     "uv",
     "wheel",
-    # Airflow
-    "apache-airflow>=2.8,<3.1",
-    "apache-airflow-providers-ssh",
-    "apache-airflow-providers-standard",
-    "paramiko<4",
-    "structlog<25.5.0",
     # Standalone UI
     "flask_appbuilder",
     "flask-limiter<3.13",
@@ -61,7 +55,20 @@ develop = [
     "fastapi",
     "uvicorn",
 ]
-
+airflow = [
+    "apache-airflow>=2.8,<3",
+    "apache-airflow-providers-ssh",
+    "apache-airflow-providers-standard",
+    "paramiko<4",
+    "structlog<25.5.0",
+]
+airflow3 = [
+    "apache-airflow>=3,<3.2",
+    "apache-airflow-providers-ssh",
+    "apache-airflow-providers-standard",
+    "paramiko<4",
+    "structlog<25.5.0",
+]
 
 [project.entry-points."airflow.plugins"]
 airflow-balancer-viewer = "airflow_balancer.ui.airflow:AirflowBalancerViewerPlugin"
