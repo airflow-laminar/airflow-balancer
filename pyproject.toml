@@ -49,7 +49,7 @@ develop = [
     "wheel",
     # Standalone UI
     "flask_appbuilder",
-    "flask-limiter<3.13",
+    "flask-limiter<4.2",
     "flask",
     "fastapi",
     "uvicorn",
