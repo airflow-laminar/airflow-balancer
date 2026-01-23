@@ -6,6 +6,10 @@ hidden: true
 ---
 
 
+docs/src/getting-started.md
+
+docs/src/examples.md
+
 docs/src/API.md
 
 
@@ -22,8 +26,21 @@ Utilities for tracking hosts and ports and load balancing DAGs
 
 ## Overview
 
-`airflow-balancer` is a utility library for Apache Airflow to track host and port usage via yaml files.
-It is tightly integrated with [airflow-laminar/airflow-config](https://github.com/airflow-laminar/airflow-config).
+`airflow-balancer` is a utility library for Apache Airflow to track host and port usage via yaml files. It enables you to:
+
+- **Track Hosts**: Define and manage a pool of worker hosts with different capabilities (OS, queues, tags)
+- **Manage Ports**: Track port usage across your host infrastructure to avoid conflicts
+- **Load Balance**: Intelligently select hosts based on queues, operating systems, tags, or custom criteria
+- **Integrate with Airflow**: Automatically create Airflow pools for each host and port
+
+### Integration with airflow-laminar Stack
+
+`airflow-balancer` is tightly integrated with the [airflow-laminar](https://github.com/airflow-laminar) ecosystem:
+
+| Library                                                                 | Integration                                                                                                                                                                          |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [airflow-pydantic](https://github.com/airflow-laminar/airflow-pydantic) | Core data models (`Host`, `Port`, `BalancerConfiguration`) are defined in `airflow-pydantic`, providing full Pydantic validation, type checking, and JSON/YAML serialization support |
+| [airflow-config](https://github.com/airflow-laminar/airflow-config)     | Configuration loading via [Hydra](https://hydra.cc) for hierarchical configs with defaults, overrides, and environment-specific settings                                             |
 
 With `airflow-balancer`, you can register host and port usage in configuration:
 
@@ -88,10 +105,83 @@ You can install from pip:
 pip install airflow-balancer
 ```
 
+For use with Apache Airflow 2.x:
+
+```bash
+pip install airflow-balancer[airflow]
+```
+
+For use with Apache Airflow 3.x:
+
+```bash
+pip install airflow-balancer[airflow3]
+```
+
 Or via conda:
 
 ```bash
 conda install airflow-balancer -c conda-forge
+```
+
+## Using with airflow-config
+
+The recommended approach is to use `airflow-balancer` as an extension within your `airflow-config` configuration:
+
+```yaml
+# config/config.yaml
+# @package _global_
+_target_: airflow_config.Configuration
+defaults:
+  - extensions/balancer@extensions.balancer
+```
+
+```yaml
+# config/extensions/balancer.yaml
+# @package extensions.balancer
+_target_: airflow_balancer.BalancerConfiguration
+
+default_username: airflow
+default_key_file: /home/airflow/.ssh/id_rsa
+hosts:
+  - name: worker1
+    size: 16
+    os: ubuntu
+    queues: [workers]
+```
+
+```python
+from airflow_config import load_config
+
+config = load_config("config", "config")
+balancer = config.extensions["balancer"]
+
+# Select a host and use its SSH hook
+host = balancer.select_host(queue="workers")
+operator = SSHOperator(ssh_hook=host.hook(), ...)
+```
+
+## Using with airflow-pydantic
+
+Since the core models are defined in `airflow-pydantic`, you can leverage its testing utilities:
+
+```python
+from airflow_balancer import BalancerConfiguration, Host
+from airflow_balancer.testing import pools, variables
+from airflow_pydantic import Variable
+
+# Testing with mocked pools
+with pools():
+    config = BalancerConfiguration(
+        hosts=[Host(name="test-host", size=8, queues=["test"])]
+    )
+    assert config.select_host(queue="test").name == "test-host"
+
+# Using Airflow Variables for credentials
+host = Host(
+    name="secure-host",
+    username="admin",
+    password=Variable(key="host_password"),
+)
 ```
 
 ## License
