@@ -7,15 +7,10 @@ build-backend="hatchling.build"
 
 [project]
 name = "airflow-balancer"
-<<<<<<< before updating
-authors = [{name = "the airflow-balancer authors", email = "t.paine154@gmail.com"}]
-description = "Utilities for tracking hosts and ports and load balancing DAGs"
-=======
 authors = [
     {name = "the airflow-balancer authors", email = "t.paine154@gmail.com"},
 ]
-description = "Utilities for load balancing DAGs"
->>>>>>> after updating
+description = "Utilities for tracking hosts and ports and load balancing DAGs"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 version = "0.7.7"
@@ -55,10 +50,7 @@ develop = [
     "pytest-cov",
     "ruff>=0.9,<0.15",
     "twine",
-<<<<<<< before updating
-=======
     "ty",
->>>>>>> after updating
     "uv",
     "wheel",
     # Standalone UI
@@ -172,11 +164,7 @@ path = "js"
 build_cmd = "build"
 tool = "pnpm"
 targets = [
-<<<<<<< before updating
     "airflow_balancer/ui/static/cdn/index.js",
-=======
-    "airflow_balancer/extension/cdn/index.js",
->>>>>>> after updating
 ]
 
 [tool.pytest.ini_options]
@@ -209,17 +197,13 @@ section-order = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-<<<<<<< before updating
-"__init__.py" = ["F401", "F403"]
+"__init__.py" = [
+    "F401",
+    "F403",
+]
 
 [tool.yardang]
 title = "airflow-balancer"
 root = "README.md"
 pages = ["docs/src/getting-started.md", "docs/src/examples.md", "docs/src/API.md"]
 use-autoapi = false
-=======
-"__init__.py" = [
-    "F401",
-    "F403",
-]
->>>>>>> after updating
