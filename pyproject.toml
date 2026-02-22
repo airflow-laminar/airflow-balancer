@@ -106,20 +106,6 @@ filename = "js/package.json"
 search = '"version": "{current_version}"'
 replace = '"version": "{new_version}"'
 
-<<<<<<< before updating
-[tool.check-manifest]
-ignore = [
-    ".copier-answers.yaml",
-    "js/pnpm-lock.yaml",
-    "Makefile",
-    ".vscode/*",
-    "airflow_balancer/ui/static/**/*",
-    "docs/**/*",
-    "js/dist/**/*",
-]
-
-=======
->>>>>>> after updating
 [tool.coverage.run]
 branch = true
 omit = [
