@@ -3,7 +3,7 @@ requires = [
     "hatchling",
     "hatch-js",
 ]
-build-backend="hatchling.build"
+build-backend = "hatchling.build"
 
 [project]
 name = "airflow-balancer"
@@ -40,15 +40,15 @@ dependencies = [
 develop = [
     "build",
     "bump-my-version",
-    "check-manifest",
-    "codespell>=2.4,<2.5",
+    "check-dist",
+    "codespell",
     "hatch-js",
     "hatchling",
-    "mdformat>=0.7.22,<1.1",
+    "mdformat",
     "mdformat-tables>=1",
     "pytest",
     "pytest-cov",
-    "ruff>=0.9,<0.15",
+    "ruff",
     "twine",
     "ty",
     "uv",
@@ -106,6 +106,7 @@ filename = "js/package.json"
 search = '"version": "{current_version}"'
 replace = '"version": "{new_version}"'
 
+<<<<<<< before updating
 [tool.check-manifest]
 ignore = [
     ".copier-answers.yaml",
@@ -117,6 +118,8 @@ ignore = [
     "js/dist/**/*",
 ]
 
+=======
+>>>>>>> after updating
 [tool.coverage.run]
 branch = true
 omit = [
@@ -145,8 +148,8 @@ packages = [
     "js",
 ]
 exclude = [
-    "/js/dist",
-    "/js/node_modules",
+    "js/dist",
+    "js/node_modules",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -154,7 +157,7 @@ packages = [
     "airflow_balancer",
 ]
 exclude = [
-    "/js",
+    "js",
 ]
 
 [tool.hatch.build.targets.wheel.shared-data]
