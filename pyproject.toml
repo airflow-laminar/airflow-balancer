@@ -111,6 +111,7 @@ branch = true
 omit = [
     "airflow_balancer/tests/integration/",
 ]
+
 [tool.coverage.report]
 exclude_also = [
     "raise NotImplementedError",
