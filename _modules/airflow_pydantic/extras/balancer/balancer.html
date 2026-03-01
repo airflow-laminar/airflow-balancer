@@ -236,20 +236,15 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for airflow_pydantic.extras.balancer.balancer</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">OperationalError</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">OperationalError</span> <span class="o">=</span> <span class="ne">RuntimeError</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">...airflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_or_update_pool</span><span class="p">,</span> <span class="n">get_pool</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...core</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">Variable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.host</span><span class="w"> </span><span class="kn">import</span> <span class="n">Host</span>
@@ -263,16 +258,16 @@
 <div class="viewcode-block" id="BalancerConfiguration">
 <a class="viewcode-back" href="../../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BalancerConfiguration</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">hosts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">ports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Port</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">hosts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">ports</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Port</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
     <span class="n">default_username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;airflow&quot;</span>
 
     <span class="c1"># Password</span>
-    <span class="n">default_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Variable</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">default_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Variable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># Or get key file</span>
-    <span class="n">default_key_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">default_key_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># The queue that might include the host running airflow itself</span>
     <span class="n">primary_queue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
@@ -294,11 +289,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">all_hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hosts</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hosts</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">all_ports</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="p">))</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
@@ -325,23 +320,21 @@
             <span class="k">if</span> <span class="n">get_parsing_context</span><span class="p">()</span><span class="o">.</span><span class="n">dag_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># check airflow first</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="n">Pool</span><span class="p">):</span>
-                        <span class="n">pool_name</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">pool</span>
-                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="n">AirflowPool</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="p">(</span><span class="n">Pool</span><span class="p">,</span> <span class="n">AirflowPool</span><span class="p">)):</span>
                         <span class="n">pool_name</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">pool</span>
                     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                         <span class="n">pool_name</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pool&quot;</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                         <span class="n">pool_name</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">pool</span>
 
-                    <span class="n">res</span> <span class="o">=</span> <span class="n">AirflowPool</span><span class="o">.</span><span class="n">get_pool</span><span class="p">(</span><span class="n">pool_name</span><span class="p">)</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">get_pool</span><span class="p">(</span><span class="n">pool_name</span><span class="p">)</span>
 
                     <span class="c1"># airflow return value differs version-to-version</span>
                     <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">PoolNotFound</span>
                     <span class="k">elif</span> <span class="n">res</span><span class="o">.</span><span class="n">slots</span> <span class="o">!=</span> <span class="n">host</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">override_pool_size</span><span class="p">:</span>
-                            <span class="n">AirflowPool</span><span class="o">.</span><span class="n">create_or_update_pool</span><span class="p">(</span>
+                            <span class="n">create_or_update_pool</span><span class="p">(</span>
                                 <span class="n">name</span><span class="o">=</span><span class="n">pool_name</span><span class="p">,</span>
                                 <span class="n">slots</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
                                 <span class="n">description</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
@@ -352,15 +345,18 @@
                 <span class="k">except</span> <span class="n">PoolNotFound</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="c1"># else set to default</span>
-                        <span class="n">AirflowPool</span><span class="o">.</span><span class="n">create_or_update_pool</span><span class="p">(</span>
+                        <span class="n">create_or_update_pool</span><span class="p">(</span>
                             <span class="n">name</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                             <span class="n">slots</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
                             <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Balancer pool for host(</span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
                             <span class="n">include_deferred</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                         <span class="p">)</span>
-                    <span class="k">except</span> <span class="n">OperationalError</span><span class="p">:</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001, S110</span>
                         <span class="c1"># If the database is not available, we cannot create the pool</span>
                         <span class="k">pass</span>
+                <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                    <span class="c1"># If the database is not available, we cannot create the pool</span>
+                    <span class="k">pass</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">username</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_username</span><span class="p">:</span>
                 <span class="n">host</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_username</span>
@@ -385,13 +381,16 @@
             <span class="n">_used_ports</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">port</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">port</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
 
             <span class="c1"># Create pools</span>
-            <span class="c1"># TODO reenable</span>
-            <span class="c1"># Pool.create_or_update_pool(</span>
-            <span class="c1">#     name=port.pool,</span>
-            <span class="c1">#     slots=1,</span>
-            <span class="c1">#     description=f&quot;Balancer pool for host({port.port}) port({port.port})&quot;,</span>
-            <span class="c1">#     include_deferred=True,</span>
-            <span class="c1"># )</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">create_or_update_pool</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">port</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span>
+                    <span class="n">slots</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Balancer pool for host(</span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">) port(</span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                    <span class="n">include_deferred</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001, S110</span>
+                <span class="c1"># If the database is not available, we cannot create the pool</span>
+                <span class="k">pass</span>
 
         <span class="c1"># sort hosts by name, sort ports by host name then port number</span>
         <span class="c1"># NOTE: since we&#39;re in a validator and we have validate_on_assignment, bypass here</span>
@@ -403,12 +402,12 @@
 <a class="viewcode-back" href="../../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.filter_hosts">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter_hosts</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">queue</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">os</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">custom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">queue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">os</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">custom</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.query</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerHostQueryConfiguration</span>
 
         <span class="n">query</span> <span class="o">=</span> <span class="n">BalancerHostQueryConfiguration</span><span class="p">(</span>
@@ -427,12 +426,12 @@
 <a class="viewcode-back" href="../../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.select_host">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">select_host</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">queue</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">os</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="n">tag</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="n">custom</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">queue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">os</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">custom</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.query</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerHostQueryConfiguration</span>
 
         <span class="n">query</span> <span class="o">=</span> <span class="n">BalancerHostQueryConfiguration</span><span class="p">(</span>
@@ -451,10 +450,10 @@
 <a class="viewcode-back" href="../../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.filter_ports">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter_ports</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">custom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">custom</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.query</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerPortQueryConfiguration</span>
 
         <span class="n">query</span> <span class="o">=</span> <span class="n">BalancerPortQueryConfiguration</span><span class="p">(</span>
@@ -471,10 +470,10 @@
 <a class="viewcode-back" href="../../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.select_port">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">select_port</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tag</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="n">custom</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">custom</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Host</span><span class="p">]:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.query</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerPortQueryConfiguration</span>
 
         <span class="n">query</span> <span class="o">=</span> <span class="n">BalancerPortQueryConfiguration</span><span class="p">(</span>
@@ -506,7 +505,7 @@
 <div class="viewcode-block" id="BalancerConfiguration.load_path">
 <a class="viewcode-back" href="../../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.load_path">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">_config_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_path</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">_config_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load configuration from yaml file&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">hydra</span><span class="w"> </span><span class="kn">import</span> <span class="n">compose</span><span class="p">,</span> <span class="n">initialize_config_dir</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">hydra.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">instantiate</span>
@@ -552,7 +551,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span>
         <span class="n">config_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span>
         <span class="n">config_name</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="n">overrides</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overrides</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">basepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">_offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
