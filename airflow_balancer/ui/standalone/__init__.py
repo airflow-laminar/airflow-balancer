@@ -53,7 +53,6 @@ def build_app() -> FastAPI:
             Path(__file__).parent / "templates",
             Path(flask_appbuilder_root).parent / "templates",
         ],
-        autoescape=True,
     )
 
     # Mount top level routes
