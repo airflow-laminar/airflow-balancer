@@ -6,6 +6,10 @@ Makefile linguist-documentation
 *.md text=auto eol=lf
 *.js text=auto eol=lf
 *.json text=auto eol=lf
+<<<<<<< before updating
+=======
+*.md text=auto eol=lf
+>>>>>>> after updating
 *.py text=auto eol=lf
 *.toml text=auto eol=lf
 *.ts text=auto eol=lf
