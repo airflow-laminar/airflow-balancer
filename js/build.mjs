@@ -4,10 +4,6 @@ import { transform } from "lightningcss";
 import { getarg } from "./tools/getarg.mjs";
 import fs from "fs";
 import cpy from "cpy";
-<<<<<<< before updating
-import { createRequire } from "node:module";
-=======
->>>>>>> after updating
 
 const DEBUG = getarg("--debug");
 
@@ -30,11 +26,6 @@ const BUILD = [
   },
 ];
 
-<<<<<<< before updating
-const require = createRequire(import.meta.url);
-function add(builder, path, path2) {
-  builder.add(path, fs.readFileSync(require.resolve(path2 || path)).toString());
-=======
 async function compile_css() {
   const process_path = (path) => {
     const outpath = path.replace("src/css", "dist/css");
@@ -60,22 +51,19 @@ async function compile_css() {
   };
 
   process_path("src/css");
->>>>>>> after updating
-}
 
-async function compile_css() {
-  const builder1 = new BuildCss("");
-  add(builder1, "./src/less/index.less");
-  add(
-    builder1,
-    "shoelace_light.css",
-    "@shoelace-style/shoelace/dist/themes/light.css",
-  );
-
-  const css = builder1.compile().get("index.css");
-
+  const shoelaceLight = new URL(
+    "./node_modules/@shoelace-style/shoelace/dist/themes/light.css",
+    import.meta.url,
+  ).pathname;
+  const { code } = transform({
+    filename: "light.css",
+    code: fs.readFileSync(shoelaceLight),
+    minify: !DEBUG,
+    sourceMap: false,
+  });
   fs.mkdirSync("dist/css", { recursive: true });
-  fs.writeFileSync("dist/css/index.css", css);
+  fs.writeFileSync("dist/css/light.css", code);
 }
 
 async function copy_to_python() {
