@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@finos/perspective-esbuild-plugin": "^3.2.1",
-    "@playwright/test": "^1.59.0",
+    "@playwright/test": "^1.61.1",
     "cpy": "^13.2.1",
     "esbuild": "^0.28.1",
     "lightningcss": "^1.29.3",
