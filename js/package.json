@@ -28,7 +28,7 @@
   "scripts": {
     "build:debug": "node build.mjs --debug",
     "build": "node build.mjs",
-    "clean": "rm -rf dist playwright-report ../airflow_balancer/ui/static",
+    "clean": "rm -rf dist playwright-report ../airflow_balancer/extension",
     "dev": "npm-run-all -p start watch",
     "lint": "prettier --check \"src/**/*.{js,ts,jsx,tsx,css}\" \"tests/**/*.{js,ts,jsx,tsx}\" \"*.mjs\" \"*.json\"",
     "fix": "prettier  --write \"src/**/*.{js,ts,jsx,tsx,css}\" \"tests/**/*.{js,ts,jsx,tsx}\" \"*.mjs\" \"*.json\"",
@@ -44,15 +44,14 @@
     "lit": "^3.3.2"
   },
   "devDependencies": {
-    "@finos/perspective-esbuild-plugin": "^3.2.1",
-    "@playwright/test": "^1.61.1",
-    "cpy": "^13.2.1",
-    "esbuild": "^0.28.1",
+    "@playwright/test": "^1.60.0",
+    "cpy": "^13.2.2",
+    "esbuild": "^0.28.0",
     "lightningcss": "^1.29.3",
     "http-server": "^14.1.1",
-    "nodemon": "^3.1.14",
+    "nodemon": "^3.1.10",
     "npm-run-all": "^4.1.5",
-    "prettier": "^3.9.4",
-    "typescript": "^6.0.3"
+    "prettier": "^3.8.1",
+    "typescript": "^6.0.2"
   }
 }

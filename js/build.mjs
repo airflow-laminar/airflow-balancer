@@ -1,80 +1,40 @@
-import { NodeModulesExternal } from "@finos/perspective-esbuild-plugin/external.js";
-import { build } from "@finos/perspective-esbuild-plugin/build.js";
-import { transform } from "lightningcss";
-import { getarg } from "./tools/getarg.mjs";
+import { bundle } from "./tools/bundle.mjs";
+import { bundle_css } from "./tools/css.mjs";
+import { node_modules_external } from "./tools/externals.mjs";
+
 import fs from "fs";
 import cpy from "cpy";
 
-const DEBUG = getarg("--debug");
-
-const COMMON_DEFINE = {
-  global: "window",
-  "process.env.DEBUG": `${DEBUG}`,
-};
-
-const BUILD = [
+const BUNDLES = [
   {
-    define: COMMON_DEFINE,
     entryPoints: ["src/ts/index.ts"],
-    plugins: [],
-    format: "esm",
-    loader: {
-      ".css": "text",
-      ".html": "text",
-    },
+    plugins: [node_modules_external()],
+    outfile: "dist/esm/index.js",
+  },
+  {
+    entryPoints: ["src/ts/index.ts"],
     outfile: "dist/cdn/index.js",
   },
 ];
 
-async function compile_css() {
-  const process_path = (path) => {
-    const outpath = path.replace("src/css", "dist/css");
-    fs.mkdirSync(outpath, { recursive: true });
+async function build() {
+  // Bundle css
+  await bundle_css();
 
-    fs.readdirSync(path, { withFileTypes: true }).forEach((entry) => {
-      const input = `${path}/${entry.name}`;
-      const output = `${outpath}/${entry.name}`;
+  // Copy HTML
+  cpy("src/html/*", "dist/");
 
-      if (entry.isDirectory()) {
-        process_path(input);
-      } else if (entry.isFile() && entry.name.endsWith(".css")) {
-        const source = fs.readFileSync(input);
-        const { code } = transform({
-          filename: entry.name,
-          code: source,
-          minify: !DEBUG,
-          sourceMap: false,
-        });
-        fs.writeFileSync(output, code);
-      }
-    });
-  };
+  // Copy images
+  fs.mkdirSync("dist/img", { recursive: true });
+  cpy("src/img/*", "dist/img");
 
-  process_path("src/css");
+  await Promise.all(BUNDLES.map(bundle)).catch(() => process.exit(1));
 
-  const shoelaceLight = new URL(
-    "./node_modules/@shoelace-style/shoelace/dist/themes/light.css",
-    import.meta.url,
-  ).pathname;
-  const { code } = transform({
-    filename: "light.css",
-    code: fs.readFileSync(shoelaceLight),
-    minify: !DEBUG,
-    sourceMap: false,
+  // Copy servable assets to python extension (exclude esm/)
+  fs.mkdirSync("../airflow_balancer/extension", { recursive: true });
+  cpy("dist/**/*", "../airflow_balancer/extension", {
+    filter: (file) => !file.relativePath.startsWith("esm"),
   });
-  fs.mkdirSync("dist/css", { recursive: true });
-  fs.writeFileSync("dist/css/light.css", code);
 }
 
-async function copy_to_python() {
-  fs.mkdirSync("../airflow_balancer/ui/static", { recursive: true });
-  cpy("dist/**/*", "../airflow_balancer/ui/static");
-}
-
-async function build_all() {
-  await compile_css();
-  await Promise.all(BUILD.map(build)).catch(() => process.exit(1));
-  await copy_to_python();
-}
-
-build_all();
+build();

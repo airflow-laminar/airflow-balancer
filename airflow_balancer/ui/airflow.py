@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+from pathlib import Path
 
 from airflow.plugins_manager import AirflowPlugin
 
@@ -58,7 +59,7 @@ try:
         "Airflow Balancer",
         __name__,
         template_folder="templates",
-        static_folder="static",
+        static_folder=str(Path(__file__).parent.parent / "extension"),
         static_url_path="/static/airflow-balancer",
     )
 

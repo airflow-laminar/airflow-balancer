@@ -35,7 +35,7 @@ jobs:
         airflow: ["2", "3", ""]
 
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
     - uses: actions-ext/python/setup@main
       with:
@@ -43,7 +43,7 @@ jobs:
 
     - uses: actions-ext/node/setup@main
       with:
-        version: 22.x
+        version: ${{ matrix.node-version }}
 
     - name: Install dependencies
       run: make develop
@@ -72,20 +72,20 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
 
     - name: Upload test results
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
       with:
         name: test-results-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.node-version }}
         path: '**/junit.xml'
       if: ${{ matrix.airflow == '2' }}
 
     - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2
+      uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
       with:
         files: '**/junit.xml'
       if: ${{ matrix.airflow == '2' }}
 
     - name: Upload coverage
-      uses: codecov/codecov-action@v6
+      uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
       if: ${{ matrix.airflow == '2' }}
@@ -94,7 +94,17 @@ jobs:
       run: make dist
       if: ${{ matrix.airflow == '2' }}
 
-    - uses: actions/upload-artifact@v7
+    - uses: actions-ext/python/test-wheel@main
+      with:
+        module: airflow_balancer
+      if: ${{ matrix.airflow == '2' }}
+
+    - uses: actions-ext/python/test-sdist@main
+      with:
+        module: airflow_balancer
+      if: ${{ matrix.airflow == '2' }}
+
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
       with:
         name: dist-${{matrix.os}}
         path: dist
