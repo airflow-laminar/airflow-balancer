@@ -44,10 +44,16 @@
     "lit": "^3.3.2"
   },
   "devDependencies": {
+<<<<<<< before updating
     "@finos/perspective-esbuild-plugin": "^3.2.1",
     "@playwright/test": "^1.61.1",
     "cpy": "^13.2.1",
     "esbuild": "^0.28.1",
+=======
+    "@playwright/test": "^1.60.0",
+    "cpy": "^13.2.2",
+    "esbuild": "^0.28.0",
+>>>>>>> after updating
     "lightningcss": "^1.29.3",
     "http-server": "^14.1.1",
     "nodemon": "^3.1.14",
