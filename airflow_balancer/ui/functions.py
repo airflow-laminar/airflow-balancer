@@ -62,9 +62,8 @@ def get_yaml_files(dags_folder: str) -> list[Path]:
 
     # Look if the file directly instantiates a BalancerConfiguration
     for path in base_path.glob("**/*.yaml"):
-        if path.is_file():
-            if "_target_: airflow_balancer.BalancerConfiguration" in path.read_text():
-                yamls.append(path)
+        if path.is_file() and "_target_: airflow_balancer.BalancerConfiguration" in path.read_text():
+            yamls.append(path)
     len_yamls = len(yamls)
     len_yamls_last = 0
     # If we have yamls, look for any that reference them
@@ -80,6 +79,6 @@ def get_yaml_files(dags_folder: str) -> list[Path]:
         len_yamls = len(yamls)
     try:
         yamls_airflow_config = airflow_config_get_yamls(dags_folder)
-    except Exception:
+    except (OSError, UnicodeError):
         yamls_airflow_config = []
     return yamls, yamls_airflow_config
