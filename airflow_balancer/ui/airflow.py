@@ -3,12 +3,13 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
+from typing import ClassVar
 
 from airflow.plugins_manager import AirflowPlugin
 
 __all__ = (
-    "AirflowBalancerViewerPluginView",
     "AirflowBalancerViewerPlugin",
+    "AirflowBalancerViewerPluginView",
 )
 
 _log = logging.getLogger(__name__)
@@ -77,9 +78,9 @@ try:
         """Defining the plugin class"""
 
         name = "Airflow Balancer"
-        flask_blueprints = [bp]
-        appbuilder_views = [view_subitem]
-        appbuilder_menu_items = [docs_link_subitem]
+        flask_blueprints: ClassVar[list] = [bp]
+        appbuilder_views: ClassVar[list] = [view_subitem]
+        appbuilder_menu_items: ClassVar[list] = [docs_link_subitem]
 
 except ImportError:
     _log.info("airflow-balancer UI plugin disabled: airflow.www / Flask-AppBuilder not available (Airflow 3+)")

@@ -23,7 +23,6 @@ class TestConfig:
             p1dupe = Port(host_name="host1", port=1002)
 
             assert p2 < p3
-            assert p2 == p2
             assert p1 == p1dupe
             assert hash(p1) != hash(p2)
             assert p1.pool == "host1-1002"

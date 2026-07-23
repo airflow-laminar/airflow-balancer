@@ -68,7 +68,7 @@ def build_app() -> FastAPI:
             app_theme="",
             app_name="airflow-balancer",
             app_icon="",
-            menu=AD(get_list=lambda: [], extra_classes=None),
+            menu=AD(get_list=list, extra_classes=None),
             languages={},
             get_url_for_index="/",
             get_url_for_login="",
@@ -101,4 +101,4 @@ def main():
     app = build_app()
 
     # Run the application using Uvicorn
-    run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+    run(app, host="0.0.0.0", port=int(os.environ.get("PORT", "8000")))
