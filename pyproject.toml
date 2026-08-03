@@ -56,6 +56,7 @@ develop = [
     "flask_appbuilder",
     "flask-limiter<3.13",
     "flask",
+    "email-validator>=2",
     "fastapi",
     "uvicorn",
 ]
