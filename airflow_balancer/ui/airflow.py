@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import os
 from pathlib import Path
 from typing import ClassVar
@@ -12,9 +11,10 @@ __all__ = (
     "AirflowBalancerViewerPluginView",
 )
 
-_log = logging.getLogger(__name__)
-
 try:
+    from airflow.api_fastapi.auth.managers.models.resource_details import AccessView
+    from airflow.api_fastapi.core_api.security import requires_access_view
+except ImportError:
     from airflow.configuration import conf
     from airflow.security import permissions
     from airflow.www.auth import has_access
@@ -34,7 +34,9 @@ try:
             """Create hosts view"""
             yaml = request.args.get("yaml")
             if not yaml:
-                return self.render_template("airflow_config/500.html", yaml="- yaml file not specified")
+                return self.render_template("airflow_balancer/500.html", yaml="- yaml file not specified")
+            if not Path(yaml).is_file():
+                return self.render_template("airflow_balancer/500.html", yaml=yaml)
             try:
                 config = get_hosts_from_yaml(yaml)
             except FileNotFoundError:
@@ -82,13 +84,37 @@ try:
         appbuilder_views: ClassVar[list] = [view_subitem]
         appbuilder_menu_items: ClassVar[list] = [docs_link_subitem]
 
-except ImportError:
-    _log.info("airflow-balancer UI plugin disabled: airflow.www / Flask-AppBuilder not available (Airflow 3+)")
+else:
+    from fastapi import Depends
+
+    from .standalone import build_app
 
     class AirflowBalancerViewerPluginView:  # type: ignore[no-redef]
         pass
 
     class AirflowBalancerViewerPlugin(AirflowPlugin):  # type: ignore[no-redef]
-        """No-op plugin when Flask-AppBuilder UI is not available."""
+        """Airflow 3 FastAPI viewer plugin."""
 
         name = "Airflow Balancer"
+        fastapi_apps: ClassVar[list] = [
+            {
+                "app": build_app(dependencies=[Depends(requires_access_view(AccessView.WEBSITE))]),
+                "url_prefix": "/airflow-balancer",
+                "name": "Airflow Balancer Viewer",
+            }
+        ]
+        external_views: ClassVar[list] = [
+            {
+                "name": "Airflow Balancer Viewer",
+                "href": "/airflow-balancer/",
+                "destination": "nav",
+                "category": "admin",
+                "url_route": "airflow-balancer",
+            },
+            {
+                "name": "Airflow Balancer Docs",
+                "href": "https://airflow-laminar.github.io/airflow-balancer/",
+                "destination": "nav",
+                "category": "docs",
+            },
+        ]
