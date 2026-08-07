@@ -303,6 +303,11 @@
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_connection</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#airflow_balancer.BalancerConfiguration.create_connection" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="airflow_balancer.BalancerConfiguration.pool_manager">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pool_manager</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PoolManagerConfiguration</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#airflow_balancer.BalancerConfiguration.pool_manager" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="airflow_balancer.BalancerConfiguration.all_hosts">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_hosts</span></span><a class="headerlink" href="#airflow_balancer.BalancerConfiguration.all_hosts" title="Link to this definition">¶</a></dt>
@@ -311,6 +316,16 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="airflow_balancer.BalancerConfiguration.all_ports">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_ports</span></span><a class="headerlink" href="#airflow_balancer.BalancerConfiguration.all_ports" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="airflow_balancer.BalancerConfiguration.managed_dags">
+<span class="sig-name descname"><span class="pre">managed_dags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/airflow_pydantic/extras/balancer/balancer.html#BalancerConfiguration.managed_dags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airflow_balancer.BalancerConfiguration.managed_dags" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="airflow_balancer.BalancerConfiguration.generated_files">
+<span class="sig-name descname"><span class="pre">generated_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/airflow_pydantic/extras/balancer/balancer.html#BalancerConfiguration.generated_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airflow_balancer.BalancerConfiguration.generated_files" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -413,8 +428,11 @@
 <li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.default_size"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.default_size</span></code></a></li>
 <li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.override_pool_size"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.override_pool_size</span></code></a></li>
 <li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.create_connection"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.create_connection</span></code></a></li>
+<li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.pool_manager"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.pool_manager</span></code></a></li>
 <li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.all_hosts"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.all_hosts</span></code></a></li>
 <li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.all_ports"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.all_ports</span></code></a></li>
+<li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.managed_dags"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.managed_dags()</span></code></a></li>
+<li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.generated_files"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.generated_files()</span></code></a></li>
 <li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.filter_hosts"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.filter_hosts()</span></code></a></li>
 <li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.select_host"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.select_host()</span></code></a></li>
 <li><a class="reference internal" href="#airflow_balancer.BalancerConfiguration.filter_ports"><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.filter_ports()</span></code></a></li>
