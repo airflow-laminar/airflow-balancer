@@ -2,6 +2,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from airflow_pydantic.migration import _airflow_3
+from fastapi.testclient import TestClient
 
 from airflow_balancer import BalancerConfiguration
 from airflow_balancer.testing import pools
@@ -17,7 +19,10 @@ class TestAirflowPlugin:
             return pytest.skip("Airflow not installed")
 
         AirflowBalancerViewerPluginView()
-        AirflowBalancerViewerPlugin()
+        plugin = AirflowBalancerViewerPlugin()
+        if _airflow_3():
+            assert plugin.fastapi_apps[0]["url_prefix"] == "/airflow-balancer"
+            assert plugin.external_views[0]["href"] == "/airflow-balancer/"
 
     # def test_plugin_view(self):
     #     with patch("airflow_balancer.ui.viewer.expose") as mock_expose, \
@@ -66,13 +71,16 @@ class TestPluginFunctions:
 
 class TestStandaloneUI:
     def test_standalone_ui(self):
-        # Test the build_app function
         app = build_app()
-        assert app is not None
+        client = TestClient(app)
+        response = client.get("/")
+        assert response.status_code == 200
+        assert "airflow-balancer" in response.text
+        assert "yaml file not specified" in client.get("/hosts").text
+        assert "does-not-exist" in client.get("/hosts", params={"yaml": "/does-not-exist.yaml"}).text
 
     def test_launch(self):
-        # Test the main function
-        with patch("airflow_balancer.ui.standalone.run") as mock_run:
+        with patch("uvicorn.run") as mock_run:
             main()
             mock_run.assert_called_once()
 
