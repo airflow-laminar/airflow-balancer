@@ -307,8 +307,8 @@
 
 <div class="viewcode-block" id="BalancerConfiguration.generated_files">
 <a class="viewcode-back" href="../../../../docs/src/_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration.generated_files">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generated_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_manager</span><span class="o">.</span><span class="n">generated_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generated_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">airflow_major_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_manager</span><span class="o">.</span><span class="n">generated_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">airflow_major_version</span><span class="o">=</span><span class="n">airflow_major_version</span><span class="p">)</span></div>
 
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
