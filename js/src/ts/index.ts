@@ -1,6 +1,12 @@
-import "@shoelace-style/shoelace/dist/components/tab/tab.js";
-import "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
+import SlTab from "@shoelace-style/shoelace/dist/components/tab/tab.js";
+import SlTabGroup from "@shoelace-style/shoelace/dist/components/tab-group/tab-group.js";
 import "@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js";
+
+declare global {
+  interface Window {
+    __AIRFLOW_BALANCER_CONFIG__?: string;
+  }
+}
 
 type Host = {
   name: string;
@@ -173,18 +179,20 @@ const makePortsTable = (config: Config) => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const raw_config: string = window.__AIRFLOW_BALANCER_CONFIG__;
-  const root_node: HTMLDivElement = document.getElementById(
-    "airflow-balancer-root",
-  );
+  const raw_config = window.__AIRFLOW_BALANCER_CONFIG__;
+  const root_node = document.getElementById("airflow-balancer-root");
+  if (!root_node) {
+    return;
+  }
+
   if (raw_config === undefined) {
-    root_node!.innerHTML = makeErrorNode();
+    root_node.innerHTML = makeErrorNode();
     return;
   }
 
   const config: Config = JSON.parse(raw_config);
 
-  let root_node_content = `
+  const root_node_content = `
 <sl-tab-group id="tabGroup">
   <sl-tab slot="nav" panel="defaults">Defaults</sl-tab>
   <sl-tab slot="nav" panel="hosts">Hosts</sl-tab>
@@ -196,11 +204,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   `;
   root_node.innerHTML = root_node_content;
 
-  let url = window.location.href;
+  const url = window.location.href;
 
-  const tabGroup = document.querySelector("#tabGroup");
+  const tabGroup = document.querySelector<SlTabGroup>("#tabGroup");
+  if (!tabGroup) {
+    return;
+  }
+
   tabGroup.addEventListener("sl-tab-show", (event) => {
-    const activeTabName = event.detail.name;
+    const activeTabName = (event as CustomEvent<{ name: string }>).detail.name;
 
     // Update the window URL
     history.pushState({}, "", `#${activeTabName}`);
@@ -209,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Optionally, you can also handle the back/forward navigation
   const changeTabFromHash = () => {
     const hash = window.location.hash.slice(1);
-    const tab = tabGroup.querySelector(`sl-tab[panel="${hash}"]`);
+    const tab = tabGroup.querySelector<SlTab>(`sl-tab[panel="${hash}"]`);
     if (tab) {
       tabGroup.show(tab.panel);
     }
