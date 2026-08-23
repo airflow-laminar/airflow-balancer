@@ -142,7 +142,7 @@ dist-js:  # build js dists
 	cd js; pnpm pack
 
 dist-check:  ## run python dist checker with twine
-	python -m twine check dist/*
+	uvx --from 'twine>=7' twine check dist/*
 
 dist: clean build dist-js dist-py dist-check  ## build all dists
 
