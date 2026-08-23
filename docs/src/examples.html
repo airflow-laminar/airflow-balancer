@@ -263,11 +263,11 @@
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">&quot;config/balancer.yaml&quot;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">"config/balancer.yaml"</span><span class="p">)</span>
 
 <span class="c1"># Select any available host</span>
 <span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Selected: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -344,52 +344,52 @@
 <h3>Selecting by Queue<a class="headerlink" href="#selecting-by-queue" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">&quot;config/balancer.yaml&quot;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">"config/balancer.yaml"</span><span class="p">)</span>
 
 <span class="c1"># Select a single host from the workers queue</span>
-<span class="n">worker</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+<span class="n">worker</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 
 <span class="c1"># Filter to get all hosts in the workers queue</span>
-<span class="n">all_workers</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+<span class="n">all_workers</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 
 <span class="c1"># Select from multiple queues</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;workers&quot;</span><span class="p">,</span> <span class="s2">&quot;gpu&quot;</span><span class="p">])</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="p">[</span><span class="s2">"workers"</span><span class="p">,</span> <span class="s2">"gpu"</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
 <section id="selecting-by-operating-system">
 <h3>Selecting by Operating System<a class="headerlink" href="#selecting-by-operating-system" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select an Ubuntu host</span>
-<span class="n">ubuntu_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">)</span>
+<span class="n">ubuntu_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
 
 <span class="c1"># Select a macOS host for iOS builds</span>
-<span class="n">mac_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">&quot;macos&quot;</span><span class="p">)</span>
+<span class="n">mac_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"macos"</span><span class="p">)</span>
 
 <span class="c1"># Filter all Ubuntu hosts</span>
-<span class="n">ubuntu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">)</span>
+<span class="n">ubuntu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="selecting-by-tags">
 <h3>Selecting by Tags<a class="headerlink" href="#selecting-by-tags" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select a host with the &#39;cuda&#39; tag for GPU work</span>
-<span class="n">gpu_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select a host with the 'cuda' tag for GPU work</span>
+<span class="n">gpu_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">)</span>
 
 <span class="c1"># Use wildcards for flexible matching</span>
-<span class="n">compute_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">&quot;comp*&quot;</span><span class="p">)</span>
+<span class="n">compute_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"comp*"</span><span class="p">)</span>
 
 <span class="c1"># Multiple tags (must match at least one)</span>
-<span class="n">ml_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="s2">&quot;ml&quot;</span><span class="p">])</span>
+<span class="n">ml_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="p">[</span><span class="s2">"cuda"</span><span class="p">,</span> <span class="s2">"ml"</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
 <section id="selecting-by-name">
 <h3>Selecting by Name<a class="headerlink" href="#selecting-by-name" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select a specific host by name</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;worker-01&quot;</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"worker-01"</span><span class="p">)</span>
 
 <span class="c1"># Use wildcards to match host name patterns</span>
-<span class="n">workers</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;worker-*&quot;</span><span class="p">)</span>
+<span class="n">workers</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"worker-*"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -397,9 +397,9 @@
 <h3>Combined Criteria<a class="headerlink" href="#combined-criteria" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select an Ubuntu host from the workers queue with compute tag</span>
 <span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span>
-    <span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">,</span>
-    <span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span>
-    <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;compute&quot;</span>
+    <span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">,</span>
+    <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">,</span>
+    <span class="n">tag</span><span class="o">=</span><span class="s2">"compute"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -422,17 +422,17 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow.providers.ssh.operators.ssh</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSHOperator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">&quot;config/balancer.yaml&quot;</span><span class="p">)</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">"config/balancer.yaml"</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 
 <span class="c1"># Create an SSH hook from the host</span>
 <span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">()</span>
 
 <span class="c1"># Use with SSHOperator</span>
 <span class="n">task</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span>
-    <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;remote_task&quot;</span><span class="p">,</span>
+    <span class="n">task_id</span><span class="o">=</span><span class="s2">"remote_task"</span><span class="p">,</span>
     <span class="n">ssh_hook</span><span class="o">=</span><span class="n">ssh_hook</span><span class="p">,</span>
-    <span class="n">command</span><span class="o">=</span><span class="s2">&quot;ls -la /data&quot;</span><span class="p">,</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">"ls -la /data"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -440,7 +440,7 @@
 <section id="customizing-the-ssh-hook">
 <h3>Customizing the SSH Hook<a class="headerlink" href="#customizing-the-ssh-hook" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Override username for specific use case</span>
-<span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+<span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">)</span>
 
 <span class="c1"># Pass additional SSH hook parameters</span>
 <span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(</span>
@@ -468,7 +468,7 @@
 <span class="w">  </span><span class="c1"># Password authentication</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">legacy-host</span>
 <span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
-<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">var.json.legacy_host_credentials.password</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">"{{</span><span class="nv"> </span><span class="s">var.json.legacy_host_credentials.password</span><span class="nv"> </span><span class="s">}}"</span>
 
 <span class="w">  </span><span class="c1"># Using Airflow Variables for password</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variable-auth-host</span>
@@ -482,10 +482,10 @@
 <section id="overriding-host-configuration">
 <h3>Overriding Host Configuration<a class="headerlink" href="#overriding-host-configuration" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a modified copy of a host for specific use cases</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 
 <span class="c1"># Override username for this specific use</span>
-<span class="n">admin_host</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">override</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+<span class="n">admin_host</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">override</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">)</span>
 <span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">admin_host</span><span class="o">.</span><span class="n">hook</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -517,7 +517,7 @@
 <section id="finding-free-ports">
 <h3>Finding Free Ports<a class="headerlink" href="#finding-free-ports" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get a random free port on a host</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 <span class="n">free_port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">free_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">)</span>
 
 <span class="c1"># Specify port range</span>
@@ -528,13 +528,13 @@
 <section id="filtering-ports">
 <h3>Filtering Ports<a class="headerlink" href="#filtering-ports" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Filter ports by tag</span>
-<span class="n">api_ports</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_ports</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">&quot;api&quot;</span><span class="p">)</span>
+<span class="n">api_ports</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_ports</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"api"</span><span class="p">)</span>
 
 <span class="c1"># Filter by name pattern</span>
-<span class="n">flower_ports</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_ports</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;flower*&quot;</span><span class="p">)</span>
+<span class="n">flower_ports</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_ports</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"flower*"</span><span class="p">)</span>
 
 <span class="c1"># Select a single port</span>
-<span class="n">port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_port</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">&quot;monitoring&quot;</span><span class="p">)</span>
+<span class="n">port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_port</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"monitoring"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -563,10 +563,10 @@
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
-<span class="n">balancer</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">&quot;balancer&quot;</span><span class="p">]</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"config"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">)</span>
+<span class="n">balancer</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">"balancer"</span><span class="p">]</span>
 
-<span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -615,7 +615,7 @@
 <span class="w">  </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_pydantic.TaskArgs</span>
 <span class="w">  </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data-team</span>
 <span class="w">  </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
-<span class="w">  </span><span class="nt">pool</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">extensions.balancer.hosts[0].name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">  </span><span class="nt">pool</span><span class="p">:</span><span class="w"> </span><span class="s">"{{</span><span class="nv"> </span><span class="s">extensions.balancer.hosts[0].name</span><span class="nv"> </span><span class="s">}}"</span>
 
 <span class="nt">extensions</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">balancer</span><span class="p">:</span>
@@ -638,41 +638,41 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
 
 <span class="c1"># Load configuration</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;production&quot;</span><span class="p">)</span>
-<span class="n">balancer</span><span class="p">:</span> <span class="n">BalancerConfiguration</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">&quot;balancer&quot;</span><span class="p">]</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"config"</span><span class="p">,</span> <span class="s2">"production"</span><span class="p">)</span>
+<span class="n">balancer</span><span class="p">:</span> <span class="n">BalancerConfiguration</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">"balancer"</span><span class="p">]</span>
 
 <span class="c1"># Select hosts for different workloads</span>
-<span class="n">compute_host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;compute&quot;</span><span class="p">)</span>
-<span class="n">gpu_host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;gpu&quot;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+<span class="n">compute_host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">"compute"</span><span class="p">)</span>
+<span class="n">gpu_host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"gpu"</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">DAG</span><span class="p">(</span>
-    <span class="n">dag_id</span><span class="o">=</span><span class="s2">&quot;distributed_ml_pipeline&quot;</span><span class="p">,</span>
+    <span class="n">dag_id</span><span class="o">=</span><span class="s2">"distributed_ml_pipeline"</span><span class="p">,</span>
     <span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="n">schedule</span><span class="o">=</span><span class="s2">&quot;0 6 * * *&quot;</span><span class="p">,</span>
+    <span class="n">schedule</span><span class="o">=</span><span class="s2">"0 6 * * *"</span><span class="p">,</span>
     <span class="n">catchup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="k">as</span> <span class="n">dag</span><span class="p">:</span>
 
     <span class="c1"># Run data preparation on compute host</span>
     <span class="n">prepare_data</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span>
-        <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;prepare_data&quot;</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="o">=</span><span class="s2">"prepare_data"</span><span class="p">,</span>
         <span class="n">ssh_hook</span><span class="o">=</span><span class="n">compute_host</span><span class="o">.</span><span class="n">hook</span><span class="p">(),</span>
-        <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python /opt/ml/prepare_data.py&quot;</span><span class="p">,</span>
+        <span class="n">command</span><span class="o">=</span><span class="s2">"python /opt/ml/prepare_data.py"</span><span class="p">,</span>
         <span class="n">pool</span><span class="o">=</span><span class="n">compute_host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>  <span class="c1"># Use host-specific pool</span>
     <span class="p">)</span>
 
     <span class="c1"># Run training on GPU host</span>
     <span class="n">train_model</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span>
-        <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;train_model&quot;</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="o">=</span><span class="s2">"train_model"</span><span class="p">,</span>
         <span class="n">ssh_hook</span><span class="o">=</span><span class="n">gpu_host</span><span class="o">.</span><span class="n">hook</span><span class="p">(),</span>
-        <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python /opt/ml/train.py --gpu&quot;</span><span class="p">,</span>
+        <span class="n">command</span><span class="o">=</span><span class="s2">"python /opt/ml/train.py --gpu"</span><span class="p">,</span>
         <span class="n">pool</span><span class="o">=</span><span class="n">gpu_host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Run evaluation back on compute host</span>
     <span class="n">evaluate</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span>
-        <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;evaluate&quot;</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="o">=</span><span class="s2">"evaluate"</span><span class="p">,</span>
         <span class="n">ssh_hook</span><span class="o">=</span><span class="n">compute_host</span><span class="o">.</span><span class="n">hook</span><span class="p">(),</span>
-        <span class="n">command</span><span class="o">=</span><span class="s2">&quot;python /opt/ml/evaluate.py&quot;</span><span class="p">,</span>
+        <span class="n">command</span><span class="o">=</span><span class="s2">"python /opt/ml/evaluate.py"</span><span class="p">,</span>
         <span class="n">pool</span><span class="o">=</span><span class="n">compute_host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -693,20 +693,20 @@
     <span class="k">with</span> <span class="n">pools</span><span class="p">():</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="p">(</span>
             <span class="n">hosts</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;test-host&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]),</span>
+                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"test-host"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"test"</span><span class="p">]),</span>
             <span class="p">]</span>
         <span class="p">)</span>
-        <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;test-host&quot;</span>
+        <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"test"</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"test-host"</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_with_variables</span><span class="p">():</span>
     <span class="c1"># Mock variable operations</span>
-    <span class="k">with</span> <span class="n">variables</span><span class="p">(</span><span class="s2">&quot;my-password&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">variables</span><span class="p">(</span><span class="s2">"my-password"</span><span class="p">):</span>
         <span class="n">host</span> <span class="o">=</span> <span class="n">Host</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;test-host&quot;</span><span class="p">,</span>
-            <span class="n">username</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
-            <span class="n">password</span><span class="o">=</span><span class="n">Variable</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"test-host"</span><span class="p">,</span>
+            <span class="n">username</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">Variable</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"test"</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="k">assert</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">()</span><span class="o">.</span><span class="n">password</span> <span class="o">==</span> <span class="s2">&quot;my-password&quot;</span>
+        <span class="k">assert</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">()</span><span class="o">.</span><span class="n">password</span> <span class="o">==</span> <span class="s2">"my-password"</span>
 </pre></div>
 </div>
 </section>
@@ -719,21 +719,21 @@
     <span class="k">with</span> <span class="n">pools</span><span class="p">():</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="p">(</span>
             <span class="n">hosts</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;host1&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]),</span>
-                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;host2&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">&quot;macos&quot;</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;build&quot;</span><span class="p">]),</span>
-                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;host3&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">,</span> <span class="s2">&quot;gpu&quot;</span><span class="p">]),</span>
+                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"host1"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"compute"</span><span class="p">]),</span>
+                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"host2"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"macos"</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"build"</span><span class="p">]),</span>
+                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"host3"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"compute"</span><span class="p">,</span> <span class="s2">"gpu"</span><span class="p">]),</span>
             <span class="p">]</span>
         <span class="p">)</span>
 
         <span class="c1"># Test filtering</span>
-        <span class="n">ubuntu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">)</span>
+        <span class="n">ubuntu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ubuntu_hosts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
 
-        <span class="n">compute_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;compute&quot;</span><span class="p">)</span>
+        <span class="n">compute_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"compute"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">compute_hosts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
 
         <span class="c1"># Test selection returns one of the filtered hosts</span>
-        <span class="n">selected</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">)</span>
+        <span class="n">selected</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">selected</span> <span class="ow">in</span> <span class="n">ubuntu_hosts</span>
 </pre></div>
 </div>

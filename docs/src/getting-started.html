@@ -314,21 +314,21 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
 
 <span class="c1"># Load from a YAML file</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">&quot;config/balancer.yaml&quot;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">"config/balancer.yaml"</span><span class="p">)</span>
 
-<span class="c1"># Select a host from the &#39;workers&#39; queue</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+<span class="c1"># Select a host from the 'workers' queue</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 
 <span class="c1"># Get a free port on that host</span>
 <span class="n">port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">free_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">)</span>
 
-<span class="c1"># Use the host&#39;s SSH hook with an operator</span>
+<span class="c1"># Use the host's SSH hook with an operator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">airflow.providers.ssh.operators.ssh</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSHOperator</span>
 
 <span class="n">operator</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span>
-    <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;run_on_worker&quot;</span><span class="p">,</span>
+    <span class="n">task_id</span><span class="o">=</span><span class="s2">"run_on_worker"</span><span class="p">,</span>
     <span class="n">ssh_hook</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(),</span>
-    <span class="n">command</span><span class="o">=</span><span class="s2">&quot;echo &#39;Hello from worker!&#39;&quot;</span><span class="p">,</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">"echo 'Hello from worker!'"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -381,11 +381,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
 
 <span class="c1"># Load via airflow-config</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
-<span class="n">balancer</span><span class="p">:</span> <span class="n">BalancerConfiguration</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">&quot;balancer&quot;</span><span class="p">]</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"config"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">)</span>
+<span class="n">balancer</span><span class="p">:</span> <span class="n">BalancerConfiguration</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">"balancer"</span><span class="p">]</span>
 
 <span class="c1"># Now use the balancer</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -396,21 +396,21 @@
 
 <span class="c1"># Create configuration programmatically</span>
 <span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="p">(</span>
-    <span class="n">default_username</span><span class="o">=</span><span class="s2">&quot;airflow&quot;</span><span class="p">,</span>
+    <span class="n">default_username</span><span class="o">=</span><span class="s2">"airflow"</span><span class="p">,</span>
     <span class="n">hosts</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;worker1&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]),</span>
-        <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;worker2&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;compute&quot;</span><span class="p">]),</span>
-        <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;gpu-node&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;gpu&quot;</span><span class="p">],</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cuda&quot;</span><span class="p">]),</span>
+        <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"worker1"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"compute"</span><span class="p">]),</span>
+        <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"worker2"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"compute"</span><span class="p">]),</span>
+        <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"gpu-node"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"gpu"</span><span class="p">],</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"cuda"</span><span class="p">]),</span>
     <span class="p">],</span>
 <span class="p">)</span>
 
 <span class="c1"># Filter hosts by criteria</span>
-<span class="n">ubuntu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">&quot;ubuntu&quot;</span><span class="p">)</span>
-<span class="n">compute_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;compute&quot;</span><span class="p">)</span>
-<span class="n">gpu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+<span class="n">ubuntu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
+<span class="n">compute_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"compute"</span><span class="p">)</span>
+<span class="n">gpu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">)</span>
 
 <span class="c1"># Select a single host (randomly chosen from matches)</span>
-<span class="n">selected</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;compute&quot;</span><span class="p">)</span>
+<span class="n">selected</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"compute"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

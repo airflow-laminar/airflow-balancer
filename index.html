@@ -310,9 +310,9 @@
 <p>Either via <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code> or directly, you can then select amongst available hosts for use in your DAGs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balaner</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span><span class="p">,</span> <span class="n">load</span>
 
-<span class="n">balancer_config</span><span class="p">:</span> <span class="n">BalancerConfiguration</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s2">&quot;balancer.yaml&quot;</span><span class="p">)</span>
+<span class="n">balancer_config</span><span class="p">:</span> <span class="n">BalancerConfiguration</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s2">"balancer.yaml"</span><span class="p">)</span>
 
-<span class="n">host</span> <span class="o">=</span> <span class="n">balancer_config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">balancer_config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 <span class="n">port</span> <span class="o">=</span> <span class="n">balancer_config</span><span class="o">.</span><span class="n">free_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">)</span>
 
 <span class="o">...</span>
@@ -377,11 +377,11 @@
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
-<span class="n">balancer</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">&quot;balancer&quot;</span><span class="p">]</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"config"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">)</span>
+<span class="n">balancer</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">"balancer"</span><span class="p">]</span>
 
 <span class="c1"># Select a host and use its SSH hook</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;workers&quot;</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 <span class="n">operator</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span><span class="n">ssh_hook</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(),</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -396,15 +396,15 @@
 <span class="c1"># Testing with mocked pools</span>
 <span class="k">with</span> <span class="n">pools</span><span class="p">():</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="p">(</span>
-        <span class="n">hosts</span><span class="o">=</span><span class="p">[</span><span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;test-host&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">])]</span>
+        <span class="n">hosts</span><span class="o">=</span><span class="p">[</span><span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"test-host"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"test"</span><span class="p">])]</span>
     <span class="p">)</span>
-    <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;test-host&quot;</span>
+    <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"test"</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"test-host"</span>
 
 <span class="c1"># Using Airflow Variables for credentials</span>
 <span class="n">host</span> <span class="o">=</span> <span class="n">Host</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;secure-host&quot;</span><span class="p">,</span>
-    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
-    <span class="n">password</span><span class="o">=</span><span class="n">Variable</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;host_password&quot;</span><span class="p">),</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"secure-host"</span><span class="p">,</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="n">Variable</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"host_password"</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
