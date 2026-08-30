@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import ClassVar
 
@@ -15,13 +14,12 @@ try:
     from airflow.api_fastapi.auth.managers.models.resource_details import AccessView
     from airflow.api_fastapi.core_api.security import requires_access_view
 except ImportError:
-    from airflow.configuration import conf
     from airflow.security import permissions
     from airflow.www.auth import has_access
     from flask import Blueprint, request
     from flask_appbuilder import BaseView, expose
 
-    from .functions import get_hosts_from_yaml, get_yaml_files
+    from .functions import get_dags_folder, get_hosts_from_yaml, get_yaml_files
 
     class AirflowBalancerViewerPluginView(BaseView):
         """Creating a Flask-AppBuilder View"""
@@ -48,7 +46,7 @@ except ImportError:
         def home(self):
             """Create default view"""
             # Locate the dags folder
-            dags_folder = os.environ.get("AIRFLOW__CORE__DAGS_FOLDER", conf.getsection("core").get("dags_folder"))
+            dags_folder = get_dags_folder()
             if not dags_folder:
                 return self.render_template("airflow_balancer/404.html")
             yamls, yamls_airflow_config = get_yaml_files(dags_folder)
