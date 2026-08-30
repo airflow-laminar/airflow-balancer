@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from airflow_balancer import BalancerConfiguration
 from airflow_balancer.testing import pools
-from airflow_balancer.ui.functions import get_hosts_from_yaml, get_yaml_files
+from airflow_balancer.ui.functions import get_dags_folder, get_hosts_from_yaml, get_yaml_files
 from airflow_balancer.ui.standalone import build_app, main
 
 
@@ -67,6 +67,27 @@ class TestPluginFunctions:
     def test_plugin_functions_get_hosts_airflow_config(self):
         root = Path(__file__).parent
         assert get_hosts_from_yaml(Path(root) / "config/config.yaml").startswith('{"hosts":[{"name":"host0","username":"test","password":null,')
+
+
+class TestPluginFunctionsDagsFolder:
+    def test_get_dags_folder_prefers_environment(self, monkeypatch):
+        monkeypatch.setenv("AIRFLOW__CORE__DAGS_FOLDER", "/from/env")
+        assert get_dags_folder() == "/from/env"
+
+    def test_get_dags_folder_falls_back_to_airflow_config(self, monkeypatch):
+        try:
+            from airflow.configuration import conf
+        except ImportError:
+            return pytest.skip("Airflow not installed")
+
+        monkeypatch.delenv("AIRFLOW__CORE__DAGS_FOLDER", raising=False)
+        assert get_dags_folder() == conf.getsection("core").get("dags_folder")
+
+    def test_get_yaml_files_skips_undecodable_files(self, tmp_path):
+        (tmp_path / "good.yaml").write_text("_target_: airflow_balancer.BalancerConfiguration\nhosts: []\n")
+        (tmp_path / "bad.yaml").write_bytes(b"\xff\xfe\x00\x81")
+        yamls, _ = get_yaml_files(tmp_path)
+        assert yamls == [tmp_path / "good.yaml"]
 
 
 class TestStandaloneUI:
