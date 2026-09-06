@@ -54,7 +54,7 @@ develop = [
     "wheel",
     # Standalone UI
     "flask_appbuilder>=4.5.4",
-    "flask-limiter<3.13",
+    "flask-limiter<4.2",
     "flask",
     "email-validator>=2",
     "fastapi",
