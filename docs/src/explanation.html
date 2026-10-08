@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="prev" title="How host selection relates to Airflow scheduling" href="explanation.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Getting started" href="getting-started.html"><link rel="prev" title="Reference" href="API.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>Getting started - airflow-balancer v0.7.11</title>
+        <title>How host selection relates to Airflow scheduling - airflow-balancer v0.7.11</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -179,7 +179,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -201,8 +201,8 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Select a worker and inspect its configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">How-to guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="explanation.html">How host selection relates to Airflow scheduling</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Getting started</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">How host selection relates to Airflow scheduling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 </ul>
 
 </div>
@@ -223,7 +223,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/docs/src/getting-started.md.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/docs/src/explanation.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -236,15 +236,37 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="getting-started">
-<h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h1>
-<p>Start with <a class="reference internal" href="tutorial.html"><span class="std std-doc">Select a worker and inspect its configuration</span></a>. It provides a complete exercise using one YAML file and a Python script.</p>
-<p>For an existing Airflow deployment, the <a class="reference internal" href="examples.html"><span class="std std-doc">how-to guides</span></a> cover Python configuration, Hydra composition, SSH hooks, pool reconciliation, and the viewer. Consult the <a class="reference internal" href="API.html"><span class="std std-doc">reference</span></a> for fields and method behavior, and the <a class="reference internal" href="explanation.html"><span class="std std-doc">explanation</span></a> for how selection and scheduling interact.</p>
+          <section class="tex2jax_ignore mathjax_ignore" id="how-host-selection-relates-to-airflow-scheduling">
+<h1>How host selection relates to Airflow scheduling<a class="headerlink" href="#how-host-selection-relates-to-airflow-scheduling" title="Link to this heading">¶</a></h1>
+<section id="configured-candidates-and-random-selection">
+<h2>Configured candidates and random selection<a class="headerlink" href="#configured-candidates-and-random-selection" title="Link to this heading">¶</a></h2>
+<p>A balancer declaration describes eligible worker hosts, their labels, and known ports. Filters narrow that inventory by name, queue, operating system, tag, or a predicate. Selection chooses randomly from the remaining candidates.</p>
+<p>The selection algorithm does not poll CPU usage or inspect live Airflow pool occupancy. A host with more configured slots is not given a larger selection weight. Operating-system names and tags are labels supplied by the configuration author.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">queue</span></code> filter selects hosts carrying that label. It does not set an operator’s Celery queue. The SSH hook chooses the remote machine; the operator’s <code class="docutils literal notranslate"><span class="pre">queue</span></code> chooses where Airflow executes the task itself.</p>
+<p>If selection runs while the DAG is parsed, the selected host is part of that parsed DAG until it is parsed again. This affects repeated runs: random selection during parsing does not imply a fresh selection for each task attempt.</p>
+</section>
+<section id="pool-ownership">
+<h2>Pool ownership<a class="headerlink" href="#pool-ownership" title="Link to this heading">¶</a></h2>
+<p>A host’s pool declaration expresses Airflow concurrency capacity. It can use the host’s name or a custom pool name. Operators participate in that limit when their <code class="docutils literal notranslate"><span class="pre">pool</span></code> argument names the corresponding pool; <code class="docutils literal notranslate"><span class="pre">host.pool.pool</span></code> supplies that identifier.</p>
+<p>Pool declarations remain usable while generating DAG files without an Airflow metadata database. The pool-manager extension reconciles those declarations in a scheduled task. This separates configuration parsing from pool mutations and gives reconciliation a task state, logs, and retries.</p>
+<p>The manager creates missing pools. Existing slot counts remain under deployment control unless <code class="docutils literal notranslate"><span class="pre">override_pool_size</span></code> is enabled. Description and deferred-task settings are reconciled independently. Host pool capacity comes from the host’s <code class="docutils literal notranslate"><span class="pre">size</span></code>; each configured port gets a one-slot pool.</p>
+<p>A declared port pool only constrains tasks that use it. A pool does not reserve a network socket, and declaring a host does not create an SSH Connection automatically.</p>
+</section>
+<section id="port-availability">
+<h2>Port availability<a class="headerlink" href="#port-availability" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">free_port()</span></code> means unlisted in the current configuration for the chosen host. It neither probes the network nor records its choice in the configuration. Two callers can therefore receive the same port, and an unlisted port can already be in use by another service.</p>
+<p>When a service needs a stable endpoint, a configured <code class="docutils literal notranslate"><span class="pre">Port</span></code> gives it a predictable identifier. Dynamic allocation needs another owner for reservation and release, such as the process that binds the socket or the workload scheduler.</p>
+</section>
+<section id="models-composition-and-the-viewer">
+<h2>Models, composition, and the viewer<a class="headerlink" href="#models-composition-and-the-viewer" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">airflow-pydantic</span></code> implements the models and queries. <code class="docutils literal notranslate"><span class="pre">airflow-balancer</span></code> reexports them and supplies the viewer; <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code> composes them with DAG and environment configuration.</p>
+<p>The viewer shows that declared configuration. Its Hosts table shows a pool’s name, and its Ports table shows configured endpoints. It is not a display of live pool occupancy or operating-system port usage.</p>
+</section>
 </section>
 
         </article>
@@ -252,15 +274,23 @@
       <footer>
         
         <div class="related-pages">
-          
-          <a class="prev-page" href="explanation.html">
+          <a class="next-page" href="getting-started.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Getting started</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="API.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">How host selection relates to Airflow scheduling</div>
+                <div class="title">Reference</div>
                 
               </div>
             </a>
@@ -282,8 +312,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">How host selection relates to Airflow scheduling</a><ul>
+<li><a class="reference internal" href="#configured-candidates-and-random-selection">Configured candidates and random selection</a></li>
+<li><a class="reference internal" href="#pool-ownership">Pool ownership</a></li>
+<li><a class="reference internal" href="#port-availability">Port availability</a></li>
+<li><a class="reference internal" href="#models-composition-and-the-viewer">Models, composition, and the viewer</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="prev" title="How host selection relates to Airflow scheduling" href="explanation.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="How-to guides" href="examples.html"><link rel="prev" title="airflow-balancer" href="../../index.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>Getting started - airflow-balancer v0.7.11</title>
+        <title>Select a worker and inspect its configuration - airflow-balancer v0.7.11</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -179,7 +179,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -198,11 +198,11 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Select a worker and inspect its configuration</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Select a worker and inspect its configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">How-to guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="explanation.html">How host selection relates to Airflow scheduling</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 </ul>
 
 </div>
@@ -223,7 +223,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/docs/src/getting-started.md.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/docs/src/tutorial.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -236,15 +236,80 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="getting-started">
-<h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h1>
-<p>Start with <a class="reference internal" href="tutorial.html"><span class="std std-doc">Select a worker and inspect its configuration</span></a>. It provides a complete exercise using one YAML file and a Python script.</p>
-<p>For an existing Airflow deployment, the <a class="reference internal" href="examples.html"><span class="std std-doc">how-to guides</span></a> cover Python configuration, Hydra composition, SSH hooks, pool reconciliation, and the viewer. Consult the <a class="reference internal" href="API.html"><span class="std std-doc">reference</span></a> for fields and method behavior, and the <a class="reference internal" href="explanation.html"><span class="std std-doc">explanation</span></a> for how selection and scheduling interact.</p>
+          <section class="tex2jax_ignore mathjax_ignore" id="select-a-worker-and-inspect-its-configuration">
+<h1>Select a worker and inspect its configuration<a class="headerlink" href="#select-a-worker-and-inspect-its-configuration" title="Link to this heading">¶</a></h1>
+<p>Create a YAML file, load it, and select a worker and a configured port. This exercise uses Python 3.11 or later and does not connect to a worker or an Airflow metadata database. The shell commands use Linux/macOS syntax.</p>
+<section id="install-the-packages">
+<h2>Install the packages<a class="headerlink" href="#install-the-packages" title="Link to this heading">¶</a></h2>
+<p>In an empty directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>airflow-balancer<span class="w"> </span><span class="s1">'airflow-pydantic&gt;=1.7,&lt;1.8'</span>
+</pre></div>
+</div>
+</section>
+<section id="describe-a-worker">
+<h2>Describe a worker<a class="headerlink" href="#describe-a-worker" title="Link to this heading">¶</a></h2>
+<p>Save <code class="docutils literal notranslate"><span class="pre">balancer.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_balancer.BalancerConfiguration</span>
+<span class="nt">default_username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow</span>
+<span class="nt">hosts</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker1</span>
+<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linux</span>
+<span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">workers</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">cpu</span><span class="p p-Indicator">]</span>
+<span class="nt">ports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reporting-api</span>
+<span class="w">    </span><span class="nt">host_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker1</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">api</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</section>
+<section id="load-and-select">
+<h2>Load and select<a class="headerlink" href="#load-and-select" title="Link to this heading">¶</a></h2>
+<p>Save <code class="docutils literal notranslate"><span class="pre">inspect_balancer.py</span></code> beside the YAML file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
+
+<span class="n">balancer</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">"balancer.yaml"</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">"cpu"</span><span class="p">)</span>
+<span class="n">port</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_port</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"reporting-api"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">host</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="n">host</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">port</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">port</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">port</span><span class="o">.</span><span class="n">pool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Run it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>inspect_balancer.py
+</pre></div>
+</div>
+<p>The script prints these lines; Airflow logging may also report the queries:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>worker1 airflow worker1 2
+worker1 8080 reporting-api
+</pre></div>
+</div>
+<p>The host inherits <code class="docutils literal notranslate"><span class="pre">default_username</span></code>; its pool declaration uses its name and size. The named port has a separate pool identifier.</p>
+</section>
+<section id="filter-the-configuration">
+<h2>Filter the configuration<a class="headerlink" href="#filter-the-configuration" title="Link to this heading">¶</a></h2>
+<p>Add this to the Python file and run it again:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">([</span><span class="n">host</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">balancer</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">)])</span>
+<span class="nb">print</span><span class="p">([</span><span class="n">port</span><span class="o">.</span><span class="n">port</span> <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">balancer</span><span class="o">.</span><span class="n">filter_ports</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"api"</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>The two additional lines are:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>['worker1']
+[8080]
+</pre></div>
+</div>
+<p>Continue with <a class="reference internal" href="examples.html#how-to-run-an-ssh-task-on-a-selected-host"><span class="std std-ref">using the selected host in an SSH task</span></a> or <a class="reference internal" href="examples.html#how-to-load-a-balancer-through-airflow-config"><span class="std std-ref">composing the configuration with airflow-config</span></a>.</p>
+</section>
 </section>
 
         </article>
@@ -252,15 +317,23 @@
       <footer>
         
         <div class="related-pages">
-          
-          <a class="prev-page" href="explanation.html">
+          <a class="next-page" href="examples.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">How-to guides</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../../index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">How host selection relates to Airflow scheduling</div>
+                <div class="title">Home</div>
                 
               </div>
             </a>
@@ -282,8 +355,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Select a worker and inspect its configuration</a><ul>
+<li><a class="reference internal" href="#install-the-packages">Install the packages</a></li>
+<li><a class="reference internal" href="#describe-a-worker">Describe a worker</a></li>
+<li><a class="reference internal" href="#load-and-select">Load and select</a></li>
+<li><a class="reference internal" href="#filter-the-configuration">Filter the configuration</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

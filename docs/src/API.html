@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="airflow_balancer.config.Host" href="_build/airflow_balancer.config.Host.html"><link rel="prev" title="Examples" href="examples.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="How host selection relates to Airflow scheduling" href="explanation.html"><link rel="prev" title="How-to guides" href="examples.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>API Reference - airflow-balancer v0.7.11</title>
+        <title>Reference - airflow-balancer v0.7.11</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -179,7 +179,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -198,13 +198,11 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="_build/airflow_balancer.config.Host.html">airflow_balancer.config.Host</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_build/airflow_balancer.BalancerConfiguration.html">airflow_balancer.BalancerConfiguration</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Select a worker and inspect its configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">How-to guides</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explanation.html">How host selection relates to Airflow scheduling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 </ul>
 
 </div>
@@ -238,25 +236,316 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="api-reference">
-<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h1>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="_build/airflow_balancer.config.Host.html#airflow_balancer.config.Host" title="airflow_balancer.config.Host"><code class="xref py py-obj docutils literal notranslate"><span class="pre">config.Host</span></code></a></p></td>
-<td><p></p></td>
+          <section class="tex2jax_ignore mathjax_ignore" id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">airflow_balancer</span></code> reexports the models in <code class="docutils literal notranslate"><span class="pre">airflow_pydantic.extras.balancer</span></code>. This reference describes <code class="docutils literal notranslate"><span class="pre">airflow-pydantic</span></code> 1.7. The Python package requires Python 3.11 or later and supports the Airflow 2 and 3 installation extras.</p>
+<section id="balancerconfiguration">
+<h2>BalancerConfiguration<a class="headerlink" href="#balancerconfiguration" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_build/airflow_balancer.BalancerConfiguration.html#airflow_balancer.BalancerConfiguration" title="airflow_balancer.BalancerConfiguration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BalancerConfiguration</span></code></a></p></td>
-<td><p></p></td>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hosts</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+<td><p>Host declarations; duplicate names are rejected.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ports</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+<td><p>Port declarations; duplicate <code class="docutils literal notranslate"><span class="pre">(host,</span> <span class="pre">port)</span></code> pairs are rejected.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">default_username</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;airflow&quot;</span></code></p></td>
+<td><p>Username applied to hosts without one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">default_password</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>String or Variable applied to hosts without a password.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">default_key_file</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Key path applied to hosts without one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">default_size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">8</span></code></p></td>
+<td><p>Capacity applied to hosts without a truthy size.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">primary_queue</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code></p></td>
+<td><p>Configuration label for the primary queue.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">secondary_queue</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code></p></td>
+<td><p>Configuration label for the secondary queue.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">default_queue</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code></p></td>
+<td><p>Configuration label for the default queue.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">override_pool_size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Reconciliation may change existing pool slot counts when true.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">create_connection</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>Declared flag; the current validator does not create Connections.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pool_manager</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PoolManagerConfiguration()</span></code></p></td>
+<td><p>Generated reconciliation DAG settings.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<p>Validation normalizes defaults and creates missing host <strong>Pool models</strong> without querying Airflow. It resolves <code class="docutils literal notranslate"><span class="pre">Port.host_name</span></code> against the configured hosts, then sorts hosts by name and ports by host name/port number. Unknown hosts, duplicate hosts, and duplicate port usage produce validation errors.</p>
+<p><code class="docutils literal notranslate"><span class="pre">all_hosts</span></code> and <code class="docutils literal notranslate"><span class="pre">all_ports</span></code> return sorted, deduplicated declarations. <code class="docutils literal notranslate"><span class="pre">managed_dags()</span></code> returns the pool-manager Dag model, or an empty list when disabled. <code class="docutils literal notranslate"><span class="pre">generated_files(airflow_major_version=2)</span></code> returns filename/source mappings for that manager.</p>
+</section>
+<section id="host">
+<h2>Host<a class="headerlink" href="#host" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>Hostname and default pool name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">username</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>SSH username; normalized from the balancer default.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">password</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>String or <code class="docutils literal notranslate"><span class="pre">airflow_pydantic.Variable</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">key_file</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>SSH private-key path.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">os</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Operating-system label used by filters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Pool declaration; normalized from name/size when absent.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Host capacity; normalized from <code class="docutils literal notranslate"><span class="pre">default_size</span></code> when falsey.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">queues</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+<td><p>Queue labels used by filters.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tags</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+<td><p>Tags used by filters.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Host.hook(username=None,</span> <span class="pre">use_local=True,</span> <span class="pre">**hook_kwargs)</span></code> returns an SSHHook. It forwards extra keyword arguments to the SSHHook constructor. With <code class="docutils literal notranslate"><span class="pre">use_local=True</span></code>, a name without a dot gets a <code class="docutils literal notranslate"><span class="pre">.local</span></code> suffix. An explicit username takes precedence over the Host username. A password takes precedence over a key file when both are configured.</p>
+<p>Variable passwords are looked up when creating the hook. Dictionary values use the <code class="docutils literal notranslate"><span class="pre">password</span></code> key. Failed offline lookup produces an unresolved placeholder which DAG rendering replaces with a runtime lookup. <code class="docutils literal notranslate"><span class="pre">hook()</span></code> constructs the hook; opening a network connection is a separate operation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Host.override(**kwargs)</span></code> returns a new Host with overridden fields. Pool declarations serialize as objects containing <code class="docutils literal notranslate"><span class="pre">pool</span></code>, <code class="docutils literal notranslate"><span class="pre">slots</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>, and <code class="docutils literal notranslate"><span class="pre">include_deferred</span></code>; <code class="docutils literal notranslate"><span class="pre">host.pool.pool</span></code> is the string identifier.</p>
+</section>
+<section id="port">
+<h2>Port<a class="headerlink" href="#port" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>Optional identifier.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">host</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Host object.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">host_name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>Hostname resolved by the enclosing balancer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>Integer from 1 through 65535.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tags</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+<td><p>Tags used by filters.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>At least one of <code class="docutils literal notranslate"><span class="pre">host</span></code> and <code class="docutils literal notranslate"><span class="pre">host_name</span></code> is required. When both are present, their names must match. The enclosing balancer requires a resolved host.</p>
+<p><code class="docutils literal notranslate"><span class="pre">port.pool</span></code> returns <code class="docutils literal notranslate"><span class="pre">name</span></code> when nonempty, otherwise <code class="docutils literal notranslate"><span class="pre">&lt;host-name&gt;-&lt;port&gt;</span></code>. This computed identifier determines Port equality and hashing. The <code class="docutils literal notranslate"><span class="pre">name</span></code> query filter matches the explicit <code class="docutils literal notranslate"><span class="pre">name</span></code> field.</p>
+</section>
+<section id="queries">
+<h2>Queries<a class="headerlink" href="#queries" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Filters</p></th>
+<th class="head"><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">filter_hosts()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">queue</span></code>, <code class="docutils literal notranslate"><span class="pre">os</span></code>, <code class="docutils literal notranslate"><span class="pre">tag</span></code>, <code class="docutils literal notranslate"><span class="pre">custom</span></code></p></td>
+<td><p>List of matching Hosts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select_host()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">queue</span></code>, <code class="docutils literal notranslate"><span class="pre">os</span></code>, <code class="docutils literal notranslate"><span class="pre">tag</span></code>, <code class="docutils literal notranslate"><span class="pre">custom</span></code></p></td>
+<td><p>One randomly chosen Host.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">filter_ports()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">tag</span></code>, <code class="docutils literal notranslate"><span class="pre">custom</span></code></p></td>
+<td><p>List of matching Ports.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select_port()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">tag</span></code>, <code class="docutils literal notranslate"><span class="pre">custom</span></code></p></td>
+<td><p>One randomly chosen Port.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>String filters accept <code class="docutils literal notranslate"><span class="pre">fnmatch</span></code> patterns. Lists use OR within one filter; different filters are combined with AND. Queue and tag filters match any corresponding label on a candidate. <code class="docutils literal notranslate"><span class="pre">custom</span></code> is a predicate called with each candidate. A no-match query raises <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>, including a filter query. Declare <code class="docutils literal notranslate"><span class="pre">os</span></code> on candidate hosts when using an operating-system filter.</p>
+<p><code class="docutils literal notranslate"><span class="pre">BalancerHostQueryConfiguration</span></code> (<code class="docutils literal notranslate"><span class="pre">HostQuery</span></code>) and <code class="docutils literal notranslate"><span class="pre">BalancerPortQueryConfiguration</span></code> (<code class="docutils literal notranslate"><span class="pre">PortQuery</span></code>) expose the same filters as models. Their <code class="docutils literal notranslate"><span class="pre">kind</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;select&quot;</span></code> by default or <code class="docutils literal notranslate"><span class="pre">&quot;filter&quot;</span></code>; <code class="docutils literal notranslate"><span class="pre">balancer</span></code> is required. <code class="docutils literal notranslate"><span class="pre">custom</span></code> also accepts a callable path. <code class="docutils literal notranslate"><span class="pre">execute()</span></code> runs the query.</p>
+<p><code class="docutils literal notranslate"><span class="pre">free_port(host,</span> <span class="pre">min=1000,</span> <span class="pre">max=65535)</span></code> returns a new Port with a random number in <code class="docutils literal notranslate"><span class="pre">[min,</span> <span class="pre">max)</span></code> that is not listed for that host. It does not append the Port to <code class="docutils literal notranslate"><span class="pre">ports</span></code>, probe the network, or reserve a socket. The range must contain an unconfigured valid port; a fully configured range has no terminating candidate.</p>
+</section>
+<section id="loading">
+<h2>Loading<a class="headerlink" href="#loading" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Entry point</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.load_path(yaml_file,</span> <span class="pre">_config_dir=None)</span></code></p></td>
+<td><p>Loads a <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> file through Hydra. Relative strings are resolved from the working directory; <code class="docutils literal notranslate"><span class="pre">_config_dir</span></code> overrides its configuration directory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.load(config_dir=&quot;config&quot;,</span> <span class="pre">config_name=&quot;&quot;,</span> <span class="pre">overrides=None,</span> <span class="pre">*,</span> <span class="pre">basepath=&quot;&quot;,</span> <span class="pre">_offset=4)</span></code></p></td>
+<td><p>Looks for a balancer extension through airflow-config, then falls back to a balancer file.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">airflow_balancer.load_config</span></code></p></td>
+<td><p>Alias of <code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.load</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">load_path()</span></code> raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> for a non-<code class="docutils literal notranslate"><span class="pre">.yaml</span></code> filename or a loaded document without a BalancerConfiguration. <code class="docutils literal notranslate"><span class="pre">load()</span></code> defaults its fallback filename to <code class="docutils literal notranslate"><span class="pre">balancer.yaml</span></code>.</p>
+</section>
+<section id="pool-manager">
+<h2>Pool manager<a class="headerlink" href="#pool-manager" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dag.dag_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;airflow_laminar_pool_manager&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dag.schedule</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;*/5</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">*&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dag.catchup</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dag.max_active_runs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dag.is_paused_upon_creation</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">task.pool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;default_pool&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">task.retries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">task_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;reconcile_pools&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">backend</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">connection_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;airflow_laminar_api&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mwaa_environment_name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mwaa_region_name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dag</span></code> and <code class="docutils literal notranslate"><span class="pre">task</span></code> accept normal Dag and TaskArgs settings. <code class="docutils literal notranslate"><span class="pre">dag.enabled:</span> <span class="pre">false</span></code> disables generation. A task already using the reserved reconciliation task ID causes <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+<p>Backends are <code class="docutils literal notranslate"><span class="pre">auto</span></code>, <code class="docutils literal notranslate"><span class="pre">airflow2</span></code>, <code class="docutils literal notranslate"><span class="pre">airflow3</span></code>, and <code class="docutils literal notranslate"><span class="pre">mwaa</span></code>. Auto chooses MWAA when an environment name is configured, otherwise the installed Airflow major version. Airflow 2 uses database pool helpers. Airflow 3 uses the configured Connection: <code class="docutils literal notranslate"><span class="pre">extra.base_url</span></code> or the connection type/host/port forms the URL, and <code class="docutils literal notranslate"><span class="pre">extra.token</span></code> supplies authentication or login/password is exchanged at <code class="docutils literal notranslate"><span class="pre">/auth/token</span></code>. Pool requests use <code class="docutils literal notranslate"><span class="pre">/api/v2/pools</span></code>.</p>
+<p>The MWAA backend calls <code class="docutils literal notranslate"><span class="pre">boto3.client(&quot;mwaa&quot;).invoke_rest_api</span></code>; it uses <code class="docutils literal notranslate"><span class="pre">mwaa_environment_name</span></code> or <code class="docutils literal notranslate"><span class="pre">AIRFLOW_ENV_NAME</span></code>, plus the optional region. Host pools use <code class="docutils literal notranslate"><span class="pre">host.size</span></code> slots; port pools use one slot and include deferred tasks. Reconciliation creates missing pools and updates descriptions/deferred-task settings. Existing slot counts change only with <code class="docutils literal notranslate"><span class="pre">override_pool_size=True</span></code>.</p>
+</section>
+<section id="viewer">
+<h2>Viewer<a class="headerlink" href="#viewer" title="Link to this heading">¶</a></h2>
+<p>The viewer lists <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> configurations beneath the DAG directory and shows their normalized defaults, hosts, and ports. Host pool names are read from serialized Pool objects; legacy string values and missing pools are also accepted. Password values are replaced with <code class="docutils literal notranslate"><span class="pre">***</span></code> before serialization.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AIRFLOW__CORE__DAGS_FOLDER</span></code></p></td>
+<td><p>First directory choice.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Airflow <code class="docutils literal notranslate"><span class="pre">core.dags_folder</span></code></p></td>
+<td><p>Fallback when Airflow is installed.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AIRFLOW_HOME</span></code></p></td>
+<td><p>Standalone fallback when no DAG directory is resolved.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Packaged test directory</p></td>
+<td><p>Last standalone fallback.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PORT</span></code></p></td>
+<td><p>Standalone HTTP port; defaults to <code class="docutils literal notranslate"><span class="pre">8000</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The standalone CLI is <code class="docutils literal notranslate"><span class="pre">airflow-balancer-viewer</span></code>, also available through <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">airflow_balancer.ui.standalone</span></code>. It needs FastAPI and Uvicorn in addition to the base package and listens on <code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code>. <code class="docutils literal notranslate"><span class="pre">/</span></code> lists files; <code class="docutils literal notranslate"><span class="pre">/hosts?yaml=&lt;path&gt;</span></code> displays a selected configuration. Airflow 2 uses a Flask-AppBuilder view; Airflow 3 mounts a FastAPI application at <code class="docutils literal notranslate"><span class="pre">/airflow-balancer</span></code> and applies website-read authorization.</p>
+</section>
+<section id="testing-helpers">
+<h2>Testing helpers<a class="headerlink" href="#testing-helpers" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">airflow_balancer.testing.pools</span></code> and <code class="docutils literal notranslate"><span class="pre">variables</span></code> reexport the airflow-pydantic context managers for mocked Airflow access. They do not reserve actual pools or change Variable values in an Airflow deployment.</p>
+</section>
 </section>
 
         </article>
@@ -264,12 +553,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="_build/airflow_balancer.config.Host.html">
+          <a class="next-page" href="explanation.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">airflow_balancer.config.Host</div>
+                <div class="title">How host selection relates to Airflow scheduling</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -280,7 +569,7 @@
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Examples</div>
+                <div class="title">How-to guides</div>
                 
               </div>
             </a>
@@ -302,8 +591,34 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Reference</a><ul>
+<li><a class="reference internal" href="#balancerconfiguration">BalancerConfiguration</a></li>
+<li><a class="reference internal" href="#host">Host</a></li>
+<li><a class="reference internal" href="#port">Port</a></li>
+<li><a class="reference internal" href="#queries">Queries</a></li>
+<li><a class="reference internal" href="#loading">Loading</a></li>
+<li><a class="reference internal" href="#pool-manager">Pool manager</a></li>
+<li><a class="reference internal" href="#viewer">Viewer</a></li>
+<li><a class="reference internal" href="#testing-helpers">Testing helpers</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

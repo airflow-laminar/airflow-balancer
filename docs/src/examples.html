@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="API Reference" href="API.html"><link rel="prev" title="Getting Started" href="getting-started.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Reference" href="API.html"><link rel="prev" title="Select a worker and inspect its configuration" href="tutorial.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>Examples - airflow-balancer v0.7.11</title>
+        <title>How-to guides - airflow-balancer v0.7.11</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -198,13 +198,11 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Examples</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="_build/airflow_balancer.config.Host.html">airflow_balancer.config.Host</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_build/airflow_balancer.BalancerConfiguration.html">airflow_balancer.BalancerConfiguration</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Select a worker and inspect its configuration</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">How-to guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explanation.html">How host selection relates to Airflow scheduling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 </ul>
 
 </div>
@@ -243,502 +241,183 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h1>
-<p>This page provides comprehensive examples of using <code class="docutils literal notranslate"><span class="pre">airflow-balancer</span></code> for various use cases.</p>
-<section id="basic-configuration">
-<h2>Basic Configuration<a class="headerlink" href="#basic-configuration" title="Link to this heading">¶</a></h2>
-<section id="minimal-configuration">
-<h3>Minimal Configuration<a class="headerlink" href="#minimal-configuration" title="Link to this heading">¶</a></h3>
-<p>The simplest configuration with just hosts:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config/balancer.yaml</span>
-<span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_balancer.BalancerConfiguration</span>
+          <section class="tex2jax_ignore mathjax_ignore" id="how-to-guides">
+<h1>How-to guides<a class="headerlink" href="#how-to-guides" title="Link to this heading">¶</a></h1>
+<section id="how-to-define-hosts-in-python">
+<h2>How to define hosts in Python<a class="headerlink" href="#how-to-define-hosts-in-python" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span><span class="p">,</span> <span class="n">Host</span><span class="p">,</span> <span class="n">Port</span>
 
-<span class="nt">hosts</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker1</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
-
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker2</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
-
-<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">"config/balancer.yaml"</span><span class="p">)</span>
-
-<span class="c1"># Select any available host</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Selected: </span><span class="si">{</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="full-configuration">
-<h3>Full Configuration<a class="headerlink" href="#full-configuration" title="Link to this heading">¶</a></h3>
-<p>A complete configuration with all options:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config/balancer.yaml</span>
-<span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_balancer.BalancerConfiguration</span>
-
-<span class="c1"># Default credentials for all hosts</span>
-<span class="nt">default_username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow</span>
-<span class="nt">default_key_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/airflow/.ssh/id_rsa</span>
-
-<span class="c1"># Queue definitions</span>
-<span class="nt">primary_queue</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">primary</span>
-<span class="nt">secondary_queue</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">workers</span>
-<span class="nt">default_queue</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-
-<span class="c1"># Default pool size for hosts without explicit size</span>
-<span class="nt">default_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
-
-<span class="c1"># Whether to override pool sizes in Airflow if they differ</span>
-<span class="nt">override_pool_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-
-<span class="c1"># Create Airflow connections for each host</span>
-<span class="nt">create_connection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-
-<span class="nt">hosts</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">primary-host</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
-<span class="w">    </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu</span>
-<span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">primary</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">scheduler</span><span class="p p-Indicator">]</span>
-
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker-01</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16</span>
-<span class="w">    </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu</span>
-<span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">workers</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">compute</span><span class="p p-Indicator">]</span>
-
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker-02</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16</span>
-<span class="w">    </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu</span>
-<span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">workers</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">compute</span><span class="p p-Indicator">]</span>
-
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gpu-worker</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
-<span class="w">    </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu</span>
-<span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">gpu</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">compute</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">cuda</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">ml</span><span class="p p-Indicator">]</span>
-
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mac-runner</span>
-<span class="w">    </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">macos</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
-<span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">macos</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ios</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">xcode</span><span class="p p-Indicator">]</span>
-
-<span class="nt">ports</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">primary-host</span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">api</span><span class="p p-Indicator">]</span>
-
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker-01</span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8793</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">flower</span><span class="p p-Indicator">]</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="host-selection">
-<h2>Host Selection<a class="headerlink" href="#host-selection" title="Link to this heading">¶</a></h2>
-<section id="selecting-by-queue">
-<h3>Selecting by Queue<a class="headerlink" href="#selecting-by-queue" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
-
-<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">"config/balancer.yaml"</span><span class="p">)</span>
-
-<span class="c1"># Select a single host from the workers queue</span>
-<span class="n">worker</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
-
-<span class="c1"># Filter to get all hosts in the workers queue</span>
-<span class="n">all_workers</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
-
-<span class="c1"># Select from multiple queues</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="p">[</span><span class="s2">"workers"</span><span class="p">,</span> <span class="s2">"gpu"</span><span class="p">])</span>
-</pre></div>
-</div>
-</section>
-<section id="selecting-by-operating-system">
-<h3>Selecting by Operating System<a class="headerlink" href="#selecting-by-operating-system" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select an Ubuntu host</span>
-<span class="n">ubuntu_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
-
-<span class="c1"># Select a macOS host for iOS builds</span>
-<span class="n">mac_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"macos"</span><span class="p">)</span>
-
-<span class="c1"># Filter all Ubuntu hosts</span>
-<span class="n">ubuntu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="selecting-by-tags">
-<h3>Selecting by Tags<a class="headerlink" href="#selecting-by-tags" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select a host with the 'cuda' tag for GPU work</span>
-<span class="n">gpu_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">)</span>
-
-<span class="c1"># Use wildcards for flexible matching</span>
-<span class="n">compute_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"comp*"</span><span class="p">)</span>
-
-<span class="c1"># Multiple tags (must match at least one)</span>
-<span class="n">ml_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="p">[</span><span class="s2">"cuda"</span><span class="p">,</span> <span class="s2">"ml"</span><span class="p">])</span>
-</pre></div>
-</div>
-</section>
-<section id="selecting-by-name">
-<h3>Selecting by Name<a class="headerlink" href="#selecting-by-name" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select a specific host by name</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"worker-01"</span><span class="p">)</span>
-
-<span class="c1"># Use wildcards to match host name patterns</span>
-<span class="n">workers</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"worker-*"</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="combined-criteria">
-<h3>Combined Criteria<a class="headerlink" href="#combined-criteria" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select an Ubuntu host from the workers queue with compute tag</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span>
-    <span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">,</span>
-    <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">,</span>
-    <span class="n">tag</span><span class="o">=</span><span class="s2">"compute"</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="custom-selection-logic">
-<h3>Custom Selection Logic<a class="headerlink" href="#custom-selection-logic" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use a custom function for complex selection logic</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">has_enough_capacity</span><span class="p">(</span><span class="n">host</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">host</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="mi">16</span>
-
-<span class="n">large_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">custom</span><span class="o">=</span><span class="n">has_enough_capacity</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="ssh-integration">
-<h2>SSH Integration<a class="headerlink" href="#ssh-integration" title="Link to this heading">¶</a></h2>
-<section id="basic-ssh-hook-usage">
-<h3>Basic SSH Hook Usage<a class="headerlink" href="#basic-ssh-hook-usage" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow.providers.ssh.operators.ssh</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSHOperator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
-
-<span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="o">.</span><span class="n">load_path</span><span class="p">(</span><span class="s2">"config/balancer.yaml"</span><span class="p">)</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
-
-<span class="c1"># Create an SSH hook from the host</span>
-<span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">()</span>
-
-<span class="c1"># Use with SSHOperator</span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span>
-    <span class="n">task_id</span><span class="o">=</span><span class="s2">"remote_task"</span><span class="p">,</span>
-    <span class="n">ssh_hook</span><span class="o">=</span><span class="n">ssh_hook</span><span class="p">,</span>
-    <span class="n">command</span><span class="o">=</span><span class="s2">"ls -la /data"</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="customizing-the-ssh-hook">
-<h3>Customizing the SSH Hook<a class="headerlink" href="#customizing-the-ssh-hook" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Override username for specific use case</span>
-<span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">)</span>
-
-<span class="c1"># Pass additional SSH hook parameters</span>
-<span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(</span>
-    <span class="n">keepalive_interval</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">banner_timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+<span class="n">balancer</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="p">(</span>
+    <span class="n">default_username</span><span class="o">=</span><span class="s2">"airflow"</span><span class="p">,</span>
+    <span class="n">hosts</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Host</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"worker1"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"workers"</span><span class="p">],</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"cpu"</span><span class="p">],</span>
+            <span class="n">pool</span><span class="o">=</span><span class="p">{</span><span class="s2">"pool"</span><span class="p">:</span> <span class="s2">"cpu-workers"</span><span class="p">,</span> <span class="s2">"slots"</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+        <span class="p">),</span>
+        <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"gpu1"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"gpu"</span><span class="p">],</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"cuda"</span><span class="p">]),</span>
+    <span class="p">],</span>
+    <span class="n">ports</span><span class="o">=</span><span class="p">[</span><span class="n">Port</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"reporting-api"</span><span class="p">,</span> <span class="n">host_name</span><span class="o">=</span><span class="s2">"worker1"</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"api"</span><span class="p">])],</span>
 <span class="p">)</span>
 
-<span class="c1"># Use .local suffix for hostname resolution (default behavior)</span>
-<span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(</span><span class="n">use_local</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># host1 -&gt; host1.local</span>
-
-<span class="c1"># Disable .local suffix</span>
-<span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(</span><span class="n">use_local</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">)</span>
+<span class="n">port</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_port</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"reporting-api"</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">filter_hosts()</span></code> or <code class="docutils literal notranslate"><span class="pre">filter_ports()</span></code> to obtain all matches. Selection and filtering both raise <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> when there are no matches; see <a class="reference internal" href="API.html#queries"><span class="std std-ref">query behavior</span></a>.</p>
 </section>
-<section id="using-password-or-key-authentication">
-<h3>Using Password or Key Authentication<a class="headerlink" href="#using-password-or-key-authentication" title="Link to this heading">¶</a></h3>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config/balancer.yaml</span>
-<span class="nt">hosts</span><span class="p">:</span>
-<span class="w">  </span><span class="c1"># Key-based authentication (recommended)</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secure-host</span>
-<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploy</span>
-<span class="w">    </span><span class="nt">key_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/airflow/.ssh/deploy_key</span>
-
-<span class="w">  </span><span class="c1"># Password authentication</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">legacy-host</span>
-<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
-<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">"{{</span><span class="nv"> </span><span class="s">var.json.legacy_host_credentials.password</span><span class="nv"> </span><span class="s">}}"</span>
-
-<span class="w">  </span><span class="c1"># Using Airflow Variables for password</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variable-auth-host</span>
-<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
-<span class="w">    </span><span class="nt">password</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_pydantic.Variable</span>
-<span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">host_password</span>
-</pre></div>
-</div>
-</section>
-<section id="overriding-host-configuration">
-<h3>Overriding Host Configuration<a class="headerlink" href="#overriding-host-configuration" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a modified copy of a host for specific use cases</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
-
-<span class="c1"># Override username for this specific use</span>
-<span class="n">admin_host</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">override</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">)</span>
-<span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">admin_host</span><span class="o">.</span><span class="n">hook</span><span class="p">()</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="port-management">
-<h2>Port Management<a class="headerlink" href="#port-management" title="Link to this heading">¶</a></h2>
-<section id="tracking-port-usage">
-<h3>Tracking Port Usage<a class="headerlink" href="#tracking-port-usage" title="Link to this heading">¶</a></h3>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config/balancer.yaml</span>
-<span class="nt">ports</span><span class="p">:</span>
-<span class="w">  </span><span class="c1"># Associate port with host by name</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker-01</span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">api</span><span class="p p-Indicator">]</span>
-
-<span class="w">  </span><span class="c1"># Associate port with host object reference</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${...hosts[0]}</span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8793</span>
-
-<span class="w">  </span><span class="c1"># Named port for easier reference</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flower-ui</span>
-<span class="w">    </span><span class="nt">host_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker-01</span>
-<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5555</span>
-<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">monitoring</span><span class="p p-Indicator">]</span>
-</pre></div>
-</div>
-</section>
-<section id="finding-free-ports">
-<h3>Finding Free Ports<a class="headerlink" href="#finding-free-ports" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get a random free port on a host</span>
-<span class="n">host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
-<span class="n">free_port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">free_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">)</span>
-
-<span class="c1"># Specify port range</span>
-<span class="n">free_port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">free_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">9000</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="filtering-ports">
-<h3>Filtering Ports<a class="headerlink" href="#filtering-ports" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Filter ports by tag</span>
-<span class="n">api_ports</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_ports</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"api"</span><span class="p">)</span>
-
-<span class="c1"># Filter by name pattern</span>
-<span class="n">flower_ports</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_ports</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"flower*"</span><span class="p">)</span>
-
-<span class="c1"># Select a single port</span>
-<span class="n">port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_port</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s2">"monitoring"</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="integration-with-airflow-config">
-<h2>Integration with airflow-config<a class="headerlink" href="#integration-with-airflow-config" title="Link to this heading">¶</a></h2>
-<section id="basic-extension-configuration">
-<h3>Basic Extension Configuration<a class="headerlink" href="#basic-extension-configuration" title="Link to this heading">¶</a></h3>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config/config.yaml</span>
-<span class="c1"># @package _global_</span>
+<section id="how-to-load-a-balancer-through-airflow-config">
+<h2>How to load a balancer through airflow-config<a class="headerlink" href="#how-to-load-a-balancer-through-airflow-config" title="Link to this heading">¶</a></h2>
+<p>Save <code class="docutils literal notranslate"><span class="pre">config/config.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># @package _global_</span>
 <span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_config.Configuration</span>
 <span class="nt">defaults</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extensions/balancer@extensions.balancer</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_self_</span>
 </pre></div>
 </div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config/extensions/balancer.yaml</span>
-<span class="c1"># @package extensions.balancer</span>
+<p>Save <code class="docutils literal notranslate"><span class="pre">config/extensions/balancer.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># @package extensions.balancer</span>
 <span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_balancer.BalancerConfiguration</span>
-
 <span class="nt">default_username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow</span>
+<span class="nt">default_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
 <span class="nt">hosts</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker1</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="w">    </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linux</span>
 <span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">workers</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">cpu</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
+<p>Load it from a Python file beside the <code class="docutils literal notranslate"><span class="pre">config</span></code> directory:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"config"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">)</span>
 <span class="n">balancer</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">"balancer"</span><span class="p">]</span>
-
 <span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>For a single balancer file, use <code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.load_path(&quot;balancer.yaml&quot;)</span></code>. The exported <code class="docutils literal notranslate"><span class="pre">load_config</span></code> in <strong>airflow-balancer</strong> aliases <code class="docutils literal notranslate"><span class="pre">BalancerConfiguration.load</span></code>; <strong>airflow-config</strong> exports the loader for the enclosing <code class="docutils literal notranslate"><span class="pre">Configuration</span></code>.</p>
 </section>
-<section id="environment-specific-configurations">
-<h3>Environment-Specific Configurations<a class="headerlink" href="#environment-specific-configurations" title="Link to this heading">¶</a></h3>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config/extensions/balancer/base.yaml</span>
-<span class="c1"># @package extensions.balancer</span>
-<span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_balancer.BalancerConfiguration</span>
+<section id="how-to-run-an-ssh-task-on-a-selected-host">
+<h2>How to run an SSH task on a selected host<a class="headerlink" href="#how-to-run-an-ssh-task-on-a-selected-host" title="Link to this heading">¶</a></h2>
+<p>Install <code class="docutils literal notranslate"><span class="pre">airflow-balancer[airflow]</span></code> for Airflow 2 or <code class="docutils literal notranslate"><span class="pre">airflow-balancer[airflow3]</span></code> for Airflow 3. Configure SSH access to the worker and reconcile its pool before running the DAG.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span>
 
-<span class="nt">default_username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow</span>
-<span class="nt">default_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span><span class="p">,</span> <span class="n">Host</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_pydantic.airflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">DAG</span><span class="p">,</span> <span class="n">SSHOperator</span>
 
-<span class="c1"># config/extensions/balancer/production.yaml</span>
-<span class="c1"># @package extensions.balancer</span>
-<span class="nt">defaults</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">base</span>
-
-<span class="nt">default_key_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/airflow/.ssh/prod_key</span>
-<span class="nt">hosts</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prod-worker-01</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
-<span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">workers</span><span class="p p-Indicator">]</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prod-worker-02</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
-<span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">workers</span><span class="p p-Indicator">]</span>
-
-<span class="c1"># config/extensions/balancer/development.yaml</span>
-<span class="c1"># @package extensions.balancer</span>
-<span class="nt">defaults</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">base</span>
-
-<span class="nt">hosts</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-worker</span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
-<span class="w">    </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">workers</span><span class="p p-Indicator">]</span>
-</pre></div>
-</div>
-</section>
-<section id="using-with-airflow-pydantic-models">
-<h3>Using with airflow-pydantic Models<a class="headerlink" href="#using-with-airflow-pydantic-models" title="Link to this heading">¶</a></h3>
-<p>Since <code class="docutils literal notranslate"><span class="pre">airflow-balancer</span></code> builds on <code class="docutils literal notranslate"><span class="pre">airflow-pydantic</span></code>, you get full integration with the Pydantic-based Airflow models:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config/dag.yaml</span>
-<span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_config.Configuration</span>
-
-<span class="nt">default_args</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_pydantic.TaskArgs</span>
-<span class="w">  </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data-team</span>
-<span class="w">  </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
-<span class="w">  </span><span class="nt">pool</span><span class="p">:</span><span class="w"> </span><span class="s">"{{</span><span class="nv"> </span><span class="s">extensions.balancer.hosts[0].name</span><span class="nv"> </span><span class="s">}}"</span>
-
-<span class="nt">extensions</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">balancer</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_balancer.BalancerConfiguration</span>
-<span class="w">    </span><span class="nt">hosts</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compute-pool</span>
-<span class="w">        </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16</span>
-<span class="w">        </span><span class="nt">queues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">compute</span><span class="p p-Indicator">]</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="complete-dag-example">
-<h2>Complete DAG Example<a class="headerlink" href="#complete-dag-example" title="Link to this heading">¶</a></h2>
-<p>Here’s a complete example showing how to use <code class="docutils literal notranslate"><span class="pre">airflow-balancer</span></code> in a real DAG:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">airflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">DAG</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">airflow.providers.ssh.operators.ssh</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSHOperator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span>
-
-<span class="c1"># Load configuration</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"config"</span><span class="p">,</span> <span class="s2">"production"</span><span class="p">)</span>
-<span class="n">balancer</span><span class="p">:</span> <span class="n">BalancerConfiguration</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s2">"balancer"</span><span class="p">]</span>
-
-<span class="c1"># Select hosts for different workloads</span>
-<span class="n">compute_host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">"compute"</span><span class="p">)</span>
-<span class="n">gpu_host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"gpu"</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">)</span>
+<span class="n">balancer</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="p">(</span>
+    <span class="n">default_username</span><span class="o">=</span><span class="s2">"airflow"</span><span class="p">,</span>
+    <span class="n">default_key_file</span><span class="o">=</span><span class="s2">"/home/airflow/.ssh/id_rsa"</span><span class="p">,</span>
+    <span class="n">hosts</span><span class="o">=</span><span class="p">[</span><span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"worker1.example.com"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"workers"</span><span class="p">])],</span>
+<span class="p">)</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">DAG</span><span class="p">(</span>
-    <span class="n">dag_id</span><span class="o">=</span><span class="s2">"distributed_ml_pipeline"</span><span class="p">,</span>
-    <span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="n">schedule</span><span class="o">=</span><span class="s2">"0 6 * * *"</span><span class="p">,</span>
+    <span class="n">dag_id</span><span class="o">=</span><span class="s2">"run_on_worker"</span><span class="p">,</span>
+    <span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">),</span>
+    <span class="n">schedule</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">catchup</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="k">as</span> <span class="n">dag</span><span class="p">:</span>
-
-    <span class="c1"># Run data preparation on compute host</span>
-    <span class="n">prepare_data</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span>
-        <span class="n">task_id</span><span class="o">=</span><span class="s2">"prepare_data"</span><span class="p">,</span>
-        <span class="n">ssh_hook</span><span class="o">=</span><span class="n">compute_host</span><span class="o">.</span><span class="n">hook</span><span class="p">(),</span>
-        <span class="n">command</span><span class="o">=</span><span class="s2">"python /opt/ml/prepare_data.py"</span><span class="p">,</span>
-        <span class="n">pool</span><span class="o">=</span><span class="n">compute_host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>  <span class="c1"># Use host-specific pool</span>
+    <span class="n">SSHOperator</span><span class="p">(</span>
+        <span class="n">task_id</span><span class="o">=</span><span class="s2">"inspect_worker"</span><span class="p">,</span>
+        <span class="n">ssh_hook</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">(</span><span class="n">conn_timeout</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmd_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">keepalive_interval</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <span class="n">command</span><span class="o">=</span><span class="s2">"hostname"</span><span class="p">,</span>
+        <span class="n">pool</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span>
     <span class="p">)</span>
-
-    <span class="c1"># Run training on GPU host</span>
-    <span class="n">train_model</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span>
-        <span class="n">task_id</span><span class="o">=</span><span class="s2">"train_model"</span><span class="p">,</span>
-        <span class="n">ssh_hook</span><span class="o">=</span><span class="n">gpu_host</span><span class="o">.</span><span class="n">hook</span><span class="p">(),</span>
-        <span class="n">command</span><span class="o">=</span><span class="s2">"python /opt/ml/train.py --gpu"</span><span class="p">,</span>
-        <span class="n">pool</span><span class="o">=</span><span class="n">gpu_host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Run evaluation back on compute host</span>
-    <span class="n">evaluate</span> <span class="o">=</span> <span class="n">SSHOperator</span><span class="p">(</span>
-        <span class="n">task_id</span><span class="o">=</span><span class="s2">"evaluate"</span><span class="p">,</span>
-        <span class="n">ssh_hook</span><span class="o">=</span><span class="n">compute_host</span><span class="o">.</span><span class="n">hook</span><span class="p">(),</span>
-        <span class="n">command</span><span class="o">=</span><span class="s2">"python /opt/ml/evaluate.py"</span><span class="p">,</span>
-        <span class="n">pool</span><span class="o">=</span><span class="n">compute_host</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">prepare_data</span> <span class="o">&gt;&gt;</span> <span class="n">train_model</span> <span class="o">&gt;&gt;</span> <span class="n">evaluate</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">host.pool</span></code> is a <code class="docutils literal notranslate"><span class="pre">Pool</span></code> model. Pass <code class="docutils literal notranslate"><span class="pre">host.pool.pool</span></code> to an operator’s <code class="docutils literal notranslate"><span class="pre">pool</span></code> argument, including when the configured pool name differs from the hostname.</p>
+<p>To use a short hostname without appending <code class="docutils literal notranslate"><span class="pre">.local</span></code>, call <code class="docutils literal notranslate"><span class="pre">host.hook(use_local=False)</span></code>. To select a different SSH port, pass <code class="docutils literal notranslate"><span class="pre">port=2222</span></code>. Additional SSHHook keyword arguments belong on the <code class="docutils literal notranslate"><span class="pre">hook()</span></code> call; the Host model does not store an arbitrary hook-arguments mapping.</p>
+<p>To override host fields for one use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">admin_host</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">override</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">)</span>
+<span class="n">admin_hook</span> <span class="o">=</span> <span class="n">admin_host</span><span class="o">.</span><span class="n">hook</span><span class="p">(</span><span class="n">conn_timeout</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
-<section id="using-the-testing-utilities">
-<h3>Using the Testing Utilities<a class="headerlink" href="#using-the-testing-utilities" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">airflow-balancer</span></code> provides testing utilities to mock pool and variable operations:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span><span class="p">,</span> <span class="n">Host</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">pools</span><span class="p">,</span> <span class="n">variables</span>
+<section id="how-to-load-a-password-from-an-airflow-variable">
+<h2>How to load a password from an Airflow Variable<a class="headerlink" href="#how-to-load-a-password-from-an-airflow-variable" title="Link to this heading">¶</a></h2>
+<p>Set the <code class="docutils literal notranslate"><span class="pre">worker_password</span></code> Variable in Airflow, then configure the host:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Host</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">test_my_balancer_logic</span><span class="p">():</span>
-    <span class="c1"># Mock pool operations</span>
-    <span class="k">with</span> <span class="n">pools</span><span class="p">():</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="p">(</span>
-            <span class="n">hosts</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"test-host"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"test"</span><span class="p">]),</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
-        <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"test"</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"test-host"</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">test_with_variables</span><span class="p">():</span>
-    <span class="c1"># Mock variable operations</span>
-    <span class="k">with</span> <span class="n">variables</span><span class="p">(</span><span class="s2">"my-password"</span><span class="p">):</span>
-        <span class="n">host</span> <span class="o">=</span> <span class="n">Host</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">"test-host"</span><span class="p">,</span>
-            <span class="n">username</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">,</span>
-            <span class="n">password</span><span class="o">=</span><span class="n">Variable</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"test"</span><span class="p">),</span>
-        <span class="p">)</span>
-        <span class="k">assert</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">()</span><span class="o">.</span><span class="n">password</span> <span class="o">==</span> <span class="s2">"my-password"</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">Host</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"worker1.example.com"</span><span class="p">,</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">"airflow"</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="n">Variable</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"worker_password"</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">ssh_hook</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">()</span>
 </pre></div>
 </div>
-</section>
-<section id="testing-host-selection">
-<h3>Testing Host Selection<a class="headerlink" href="#testing-host-selection" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerConfiguration</span><span class="p">,</span> <span class="n">Host</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">pools</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">test_host_filtering</span><span class="p">():</span>
-    <span class="k">with</span> <span class="n">pools</span><span class="p">():</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">BalancerConfiguration</span><span class="p">(</span>
-            <span class="n">hosts</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"host1"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"compute"</span><span class="p">]),</span>
-                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"host2"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"macos"</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"build"</span><span class="p">]),</span>
-                <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"host3"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">,</span> <span class="n">queues</span><span class="o">=</span><span class="p">[</span><span class="s2">"compute"</span><span class="p">,</span> <span class="s2">"gpu"</span><span class="p">]),</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Test filtering</span>
-        <span class="n">ubuntu_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ubuntu_hosts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-
-        <span class="n">compute_hosts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">filter_hosts</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"compute"</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">compute_hosts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-
-        <span class="c1"># Test selection returns one of the filtered hosts</span>
-        <span class="n">selected</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">os</span><span class="o">=</span><span class="s2">"ubuntu"</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">selected</span> <span class="ow">in</span> <span class="n">ubuntu_hosts</span>
+<p>For YAML, replace the host’s password value with:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">password</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_pydantic.Variable</span>
+<span class="w">  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker_password</span>
 </pre></div>
 </div>
+<p>A JSON Variable with <code class="docutils literal notranslate"><span class="pre">deserialize_json:</span> <span class="pre">true</span></code> must contain a <code class="docutils literal notranslate"><span class="pre">password</span></code> key. When constructing a hook offline, an unavailable Variable produces an unresolved placeholder; use generated DAGs so the renderer replaces it with a runtime lookup.</p>
 </section>
+<section id="how-to-reconcile-configured-pools">
+<h2>How to reconcile configured pools<a class="headerlink" href="#how-to-reconcile-configured-pools" title="Link to this heading">¶</a></h2>
+<p>The pool-manager models described here are provided by <code class="docutils literal notranslate"><span class="pre">airflow-pydantic</span></code> 1.7. Use a balancer extension in an <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code> configuration as above. Add this to the balancer YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pool_manager</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<span class="w">  </span><span class="nt">connection_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">airflow_laminar_api</span>
+</pre></div>
+</div>
+<p>Generate the configuration’s DAGs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"config"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">)</span>
+<span class="n">config</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="s2">"generated"</span><span class="p">,</span> <span class="n">airflow_major_version</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For Airflow 2, set <code class="docutils literal notranslate"><span class="pre">airflow_major_version=2</span></code>. Place the generated files in the deployment’s DAG directory. The default manager DAG is <code class="docutils literal notranslate"><span class="pre">airflow_laminar_pool_manager</span></code>, with a <code class="docutils literal notranslate"><span class="pre">reconcile_pools</span></code> task scheduled every five minutes.</p>
+<p>For Airflow 3, create the <code class="docutils literal notranslate"><span class="pre">airflow_laminar_api</span></code> Connection with the API server’s base URL in <code class="docutils literal notranslate"><span class="pre">extra.base_url</span></code>, plus either <code class="docutils literal notranslate"><span class="pre">extra.token</span></code> or a login/password accepted by <code class="docutils literal notranslate"><span class="pre">/auth/token</span></code>. The authenticated user needs permission to read and create/update pools. The Airflow 2 backend uses the metadata database from the reconciliation task.</p>
+<p>If YAML slot counts should update existing pools, add:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">override_pool_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>To disable the generated manager DAG:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pool_manager</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">dag</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</pre></div>
+</div>
+<p>Loading a balancer configuration alone does not create the pools. See <a class="reference internal" href="explanation.html#pool-ownership"><span class="std std-ref">pool ownership</span></a> and the <a class="reference internal" href="API.html#pool-manager"><span class="std std-ref">pool-manager reference</span></a>.</p>
+</section>
+<section id="how-to-select-an-unconfigured-port">
+<h2>How to select an unconfigured port<a class="headerlink" href="#how-to-select-an-unconfigured-port" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">host</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">select_host</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="s2">"workers"</span><span class="p">)</span>
+<span class="n">port</span> <span class="o">=</span> <span class="n">balancer</span><span class="o">.</span><span class="n">free_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">9000</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">port</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The upper bound is exclusive. This excludes ports already listed for that host in the configuration. Supply a range with at least one unconfigured port, and arrange a separate reservation or bind check if multiple processes allocate ports.</p>
+</section>
+<section id="how-to-inspect-configuration-in-the-viewer">
+<h2>How to inspect configuration in the viewer<a class="headerlink" href="#how-to-inspect-configuration-in-the-viewer" title="Link to this heading">¶</a></h2>
+<p>In Airflow 2, open <strong>Laminar → Airflow Balancer Viewer</strong>. In Airflow 3, open the <strong>Airflow Balancer Viewer</strong> external view in the admin navigation. The Airflow plugin reads the configured DAG directory and lists matching YAML files.</p>
+<p>To run the viewer outside Airflow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>airflow-balancer<span class="w"> </span>fastapi<span class="w"> </span>uvicorn
+<span class="nv">AIRFLOW__CORE__DAGS_FOLDER</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">/config"</span><span class="w"> </span><span class="nv">PORT</span><span class="o">=</span><span class="m">8000</span><span class="w"> </span>airflow-balancer-viewer
+</pre></div>
+</div>
+<p>Open <code class="docutils literal notranslate"><span class="pre">http://localhost:8000/</span></code>, select a file, and open the Hosts or Ports tab. Host pool names are displayed from their serialized Pool models. Password values are masked.</p>
+<p>If no files appear, check that the directory contains <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> files with <code class="docutils literal notranslate"><span class="pre">_target_:</span> <span class="pre">airflow_balancer.BalancerConfiguration</span></code>, or enclosing <code class="docutils literal notranslate"><span class="pre">airflow-config</span></code> files that reference those configurations. The <a class="reference internal" href="API.html#viewer"><span class="std std-ref">reference</span></a> lists directory precedence and runtime dependencies.</p>
+</section>
+<section id="how-to-test-selection-without-contacting-airflow">
+<h2>How to test selection without contacting Airflow<a class="headerlink" href="#how-to-test-selection-without-contacting-airflow" title="Link to this heading">¶</a></h2>
+<p>Configuration loading and host selection use model declarations. To mock Airflow Variable lookup while testing a hook:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Host</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_balancer.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">variables</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">airflow_pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+
+<span class="k">with</span> <span class="n">variables</span><span class="p">(</span><span class="s2">"example-password"</span><span class="p">):</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="n">Host</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"worker1"</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">"airflow"</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">Variable</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"worker_password"</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">host</span><span class="o">.</span><span class="n">hook</span><span class="p">()</span><span class="o">.</span><span class="n">password</span> <span class="o">==</span> <span class="s2">"example-password"</span>
+</pre></div>
+</div>
+<p>For code that calls Airflow pool helpers, <code class="docutils literal notranslate"><span class="pre">airflow_balancer.testing.pools()</span></code> mocks pool lookup, creation, and mutation. These helpers are for tests; runtime pool reconciliation belongs in the generated manager task.</p>
 </section>
 </section>
 
@@ -752,18 +431,18 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">API Reference</div>
+                <div class="title">Reference</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="getting-started.html">
+          <a class="prev-page" href="tutorial.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Getting Started</div>
+                <div class="title">Select a worker and inspect its configuration</div>
                 
               </div>
             </a>
@@ -797,46 +476,15 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Examples</a><ul>
-<li><a class="reference internal" href="#basic-configuration">Basic Configuration</a><ul>
-<li><a class="reference internal" href="#minimal-configuration">Minimal Configuration</a></li>
-<li><a class="reference internal" href="#full-configuration">Full Configuration</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#host-selection">Host Selection</a><ul>
-<li><a class="reference internal" href="#selecting-by-queue">Selecting by Queue</a></li>
-<li><a class="reference internal" href="#selecting-by-operating-system">Selecting by Operating System</a></li>
-<li><a class="reference internal" href="#selecting-by-tags">Selecting by Tags</a></li>
-<li><a class="reference internal" href="#selecting-by-name">Selecting by Name</a></li>
-<li><a class="reference internal" href="#combined-criteria">Combined Criteria</a></li>
-<li><a class="reference internal" href="#custom-selection-logic">Custom Selection Logic</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#ssh-integration">SSH Integration</a><ul>
-<li><a class="reference internal" href="#basic-ssh-hook-usage">Basic SSH Hook Usage</a></li>
-<li><a class="reference internal" href="#customizing-the-ssh-hook">Customizing the SSH Hook</a></li>
-<li><a class="reference internal" href="#using-password-or-key-authentication">Using Password or Key Authentication</a></li>
-<li><a class="reference internal" href="#overriding-host-configuration">Overriding Host Configuration</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#port-management">Port Management</a><ul>
-<li><a class="reference internal" href="#tracking-port-usage">Tracking Port Usage</a></li>
-<li><a class="reference internal" href="#finding-free-ports">Finding Free Ports</a></li>
-<li><a class="reference internal" href="#filtering-ports">Filtering Ports</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#integration-with-airflow-config">Integration with airflow-config</a><ul>
-<li><a class="reference internal" href="#basic-extension-configuration">Basic Extension Configuration</a></li>
-<li><a class="reference internal" href="#environment-specific-configurations">Environment-Specific Configurations</a></li>
-<li><a class="reference internal" href="#using-with-airflow-pydantic-models">Using with airflow-pydantic Models</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#complete-dag-example">Complete DAG Example</a></li>
-<li><a class="reference internal" href="#testing">Testing</a><ul>
-<li><a class="reference internal" href="#using-the-testing-utilities">Using the Testing Utilities</a></li>
-<li><a class="reference internal" href="#testing-host-selection">Testing Host Selection</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">How-to guides</a><ul>
+<li><a class="reference internal" href="#how-to-define-hosts-in-python">How to define hosts in Python</a></li>
+<li><a class="reference internal" href="#how-to-load-a-balancer-through-airflow-config">How to load a balancer through airflow-config</a></li>
+<li><a class="reference internal" href="#how-to-run-an-ssh-task-on-a-selected-host">How to run an SSH task on a selected host</a></li>
+<li><a class="reference internal" href="#how-to-load-a-password-from-an-airflow-variable">How to load a password from an Airflow Variable</a></li>
+<li><a class="reference internal" href="#how-to-reconcile-configured-pools">How to reconcile configured pools</a></li>
+<li><a class="reference internal" href="#how-to-select-an-unconfigured-port">How to select an unconfigured port</a></li>
+<li><a class="reference internal" href="#how-to-inspect-configuration-in-the-viewer">How to inspect configuration in the viewer</a></li>
+<li><a class="reference internal" href="#how-to-test-selection-without-contacting-airflow">How to test selection without contacting Airflow</a></li>
 </ul>
 </li>
 </ul>
