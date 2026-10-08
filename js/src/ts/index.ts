@@ -16,7 +16,7 @@ type Host = {
   password_variable_key: string | null;
   key_file: string;
   os: string;
-  pool: string;
+  pool: string | { pool: string } | null;
   size: number;
   queues: string[];
   tags: string[];
@@ -105,7 +105,8 @@ const makeHostsTable = (config: Config) => {
     const host_password_variable_key = host.password_variable_key || "None";
     const host_key_file = host.key_file || "None";
     const host_os = host.os || "None";
-    const host_pool = host.pool || "None";
+    const host_pool =
+      (typeof host.pool === "string" ? host.pool : host.pool?.pool) || "None";
     const host_size = host.size || 0;
     const host_queues = host.queues
       .map((queue) => `<span class="badge badge-secondary">${queue}</span>`)
