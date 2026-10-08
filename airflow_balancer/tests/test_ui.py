@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -36,6 +37,21 @@ class TestAirflowPlugin:
 
 
 class TestPluginFunctions:
+    def test_custom_pool_serialization(self, tmp_path):
+        config_path = tmp_path / "balancer.yaml"
+        config_path.write_text(
+            "_target_: airflow_balancer.BalancerConfiguration\n"
+            "hosts:\n"
+            "  - name: worker1\n"
+            "    size: 2\n"
+            "    pool:\n"
+            "      pool: compute-pool\n"
+            "      slots: 2\n"
+        )
+        payload = json.loads(get_hosts_from_yaml(config_path))
+        assert payload["hosts"][0]["pool"]["pool"] == "compute-pool"
+        assert payload["hosts"][0]["pool"]["slots"] == 2
+
     def test_plugin_functions_get_yamls(self):
         root = Path(__file__).parent
         assert get_yaml_files(root / "config") == (
