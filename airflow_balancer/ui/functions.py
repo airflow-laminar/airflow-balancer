@@ -31,7 +31,8 @@ def get_dags_folder() -> str | None:
     try:
         from airflow.configuration import conf
 
-        return (conf.getsection("core") or {}).get("dags_folder")
+        folder = (conf.getsection("core") or {}).get("dags_folder")
+        return str(folder) if folder is not None else None
     except Exception:
         log.debug("Could not read dags_folder from the Airflow configuration", exc_info=True)
         return None
@@ -46,7 +47,7 @@ def _read_text(path: Path) -> str:
         return ""
 
 
-def get_hosts_from_yaml(yaml: str) -> list[str]:
+def get_hosts_from_yaml(yaml: str | Path) -> str:
     # Process the yaml
     yaml_file = Path(yaml).resolve()
     airflow_config_inst = None
@@ -64,7 +65,7 @@ def get_hosts_from_yaml(yaml: str) -> list[str]:
         if hasattr(airflow_config_inst, "balancer") and isinstance(airflow_config_inst.balancer, BalancerConfiguration):
             inst = airflow_config_inst.balancer
         elif hasattr(airflow_config_inst, "extensions"):
-            for ext in airflow_config_inst.extensions.values():
+            for ext in (airflow_config_inst.extensions or {}).values():
                 if isinstance(ext, BalancerConfiguration):
                     inst = ext
                     break
@@ -81,12 +82,12 @@ def get_hosts_from_yaml(yaml: str) -> list[str]:
     if inst.default_password:
         inst.default_password = "***"
     for port in inst.ports:
-        if port.host.password:
+        if port.host is not None and port.host.password:
             port.host.password = "***"
     return str(inst.model_dump_json(serialize_as_any=True))
 
 
-def get_yaml_files(dags_folder: str) -> list[Path]:
+def get_yaml_files(dags_folder: str | Path) -> tuple[list[Path], list[Path]]:
     # Look for yamls inside the dags folder
     yamls = []
     base_path = Path(dags_folder)
@@ -109,7 +110,7 @@ def get_yaml_files(dags_folder: str) -> list[Path]:
         len_yamls_last = len_yamls
         len_yamls = len(yamls)
     try:
-        yamls_airflow_config = airflow_config_get_yamls(dags_folder)
+        yamls_airflow_config = airflow_config_get_yamls(str(dags_folder))
     except (OSError, UnicodeError):
         yamls_airflow_config = []
     return yamls, yamls_airflow_config
