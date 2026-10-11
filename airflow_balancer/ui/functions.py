@@ -31,7 +31,8 @@ def get_dags_folder() -> str | None:
     try:
         from airflow.configuration import conf
 
-        return (conf.getsection("core") or {}).get("dags_folder")
+        folder = (conf.getsection("core") or {}).get("dags_folder")
+        return str(folder) if folder is not None else None
     except Exception:
         log.debug("Could not read dags_folder from the Airflow configuration", exc_info=True)
         return None

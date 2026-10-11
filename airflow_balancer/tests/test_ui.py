@@ -22,6 +22,8 @@ class TestAirflowPlugin:
         AirflowBalancerViewerPluginView()
         plugin = AirflowBalancerViewerPlugin()
         if _airflow_3():
+            assert hasattr(plugin, "fastapi_apps")
+            assert hasattr(plugin, "external_views")
             assert plugin.fastapi_apps[0]["url_prefix"] == "/airflow-balancer"
             assert plugin.external_views[0]["href"] == "/airflow-balancer/"
 
@@ -97,7 +99,7 @@ class TestPluginFunctionsDagsFolder:
             return pytest.skip("Airflow not installed")
 
         monkeypatch.delenv("AIRFLOW__CORE__DAGS_FOLDER", raising=False)
-        assert get_dags_folder() == conf.getsection("core").get("dags_folder")
+        assert get_dags_folder() == (conf.getsection("core") or {}).get("dags_folder")
 
     def test_get_yaml_files_skips_undecodable_files(self, tmp_path):
         (tmp_path / "good.yaml").write_text("_target_: airflow_balancer.BalancerConfiguration\nhosts: []\n")

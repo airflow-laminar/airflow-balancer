@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import ClassVar
 
 from airflow.plugins_manager import AirflowPlugin
 
@@ -78,9 +77,9 @@ except ImportError:
         """Defining the plugin class"""
 
         name = "Airflow Balancer"
-        flask_blueprints: ClassVar[list] = [bp]
-        appbuilder_views: ClassVar[list] = [view_subitem]
-        appbuilder_menu_items: ClassVar[list] = [docs_link_subitem]
+        flask_blueprints: list = [bp]  # noqa: RUF012
+        appbuilder_views: list = [view_subitem]  # noqa: RUF012
+        appbuilder_menu_items: list = [docs_link_subitem]  # noqa: RUF012
 
 else:
     from fastapi import Depends
@@ -94,14 +93,14 @@ else:
         """Airflow 3 FastAPI viewer plugin."""
 
         name = "Airflow Balancer"
-        fastapi_apps: ClassVar[list] = [
+        fastapi_apps: list = [  # noqa: RUF012
             {
                 "app": build_app(dependencies=[Depends(requires_access_view(AccessView.WEBSITE))]),
                 "url_prefix": "/airflow-balancer",
                 "name": "Airflow Balancer Viewer",
             }
         ]
-        external_views: ClassVar[list] = [
+        external_views: list = [  # noqa: RUF012
             {
                 "name": "Airflow Balancer Viewer",
                 "href": "/airflow-balancer/",
