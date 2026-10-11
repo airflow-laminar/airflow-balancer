@@ -58,9 +58,12 @@ class TestConfig:
         with pools():
             config = load_config("config", "config")
             assert config
+            assert config.extensions is not None
             assert "balancer" in config.extensions
-            assert len(config.extensions["balancer"].hosts) == 4
-            assert [x.name for x in config.extensions["balancer"].hosts] == ["host0", "host1", "host2", "host3"]
-            assert config.extensions["balancer"].default_username == "test"
-            for host in config.extensions["balancer"].hosts:
+            balancer = config.extensions["balancer"]
+            assert isinstance(balancer, BalancerConfiguration)
+            assert len(balancer.hosts) == 4
+            assert [x.name for x in balancer.hosts] == ["host0", "host1", "host2", "host3"]
+            assert balancer.default_username == "test"
+            for host in balancer.hosts:
                 assert host.hook()

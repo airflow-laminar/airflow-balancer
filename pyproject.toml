@@ -165,6 +165,9 @@ addopts = [
 ]
 testpaths = "airflow_balancer/tests"
 
+[tool.ty.analysis]
+allowed-unresolved-imports = ["airflow.**"]
+
 [tool.ruff]
 line-length = 150
 
