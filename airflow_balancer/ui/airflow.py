@@ -71,7 +71,7 @@ except ImportError:
         "category": "Docs",
     }
 
-    view_subitem = {"label": "Airflow Balancer Viewer", "category": "Laminar", "name": "Laminar", "view": airflow_balancer_viewer_plugin_view}
+    view_subitem = {"label": "Airflow Balancer Viewer", "category": "Browse", "name": "Laminar", "view": airflow_balancer_viewer_plugin_view}
 
     class AirflowBalancerViewerPlugin(AirflowPlugin):
         """Defining the plugin class"""
@@ -105,7 +105,7 @@ else:
                 "name": "Airflow Balancer Viewer",
                 "href": "/airflow-balancer/",
                 "destination": "nav",
-                "category": "admin",
+                "category": "browse",
                 "url_route": "airflow-balancer",
             },
             {
