@@ -31,7 +31,7 @@ classifiers = [
 
 dependencies = [
     "airflow-pydantic>=1.6,<1.8",
-    "airflow-config>=1.12,<1.13",
+    "airflow-config>=1.12,<1.14",
     "pydantic>=2",
 ]
 
